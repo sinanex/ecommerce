@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 // 🔴 MAINTENANCE MODE TOGGLE
 // ==========================================
 // Change this to `false` when you want to make the website live again.
-const IS_MAINTENANCE_MODE = true;
+const IS_MAINTENANCE_MODE = false;
 // ==========================================
 
 export function middleware(request: NextRequest) {

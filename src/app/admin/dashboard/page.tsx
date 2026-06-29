@@ -552,7 +552,7 @@ const AdminDashboard = () => {
         formData.append('image', newCategoryImage);
       }
 
-      const url = isCategoryEditMode 
+      const url = isCategoryEditMode
         ? `${API_BASE_URL}/api/categories/${editingCategoryId}`
         : `${API_BASE_URL}/api/categories`;
       const method = isCategoryEditMode ? 'PUT' : 'POST';

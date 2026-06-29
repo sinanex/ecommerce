@@ -91,13 +91,13 @@ function CheckoutContent() {
       if (response.ok) {
         const orderData = await response.json();
         localStorage.setItem('lastOrder', JSON.stringify(orderData));
-        
+
         if (checkoutState?.isBuyNow && checkoutState?.buyNowItemId) {
           await removeFromCart(checkoutState.buyNowItemId);
         } else {
           clearCart();
         }
-        
+
         localStorage.removeItem('checkoutState');
         showSnackbar("Success", "Order placed successfully!", "success");
         navigate.push('/success');

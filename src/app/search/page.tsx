@@ -11,6 +11,7 @@ export default function SearchPage() {
   const navigate = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [randomProducts, setRandomProducts] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,7 +21,9 @@ export default function SearchPage() {
       .then(data => {
         if (Array.isArray(data)) {
           setAllProducts(data);
-          setFilteredProducts(data);
+          const shuffled = [...data].sort(() => 0.5 - Math.random()).slice(0, 10);
+          setRandomProducts(shuffled);
+          setFilteredProducts(shuffled);
         }
       })
       .catch(err => console.error("Error fetching products:", err))
@@ -29,7 +32,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setFilteredProducts(allProducts);
+      setFilteredProducts(randomProducts);
       return;
     }
 

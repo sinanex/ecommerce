@@ -404,8 +404,41 @@ export default function ProductDetail() {
 
     setIsBuying(true);
     try {
-      await addToCart(product, selectedSize, 1);
-      navigate.push('/checkout');
+      const itemId = await addToCart(product, selectedSize, 1, true);
+      
+      const token = localStorage.getItem('userToken');
+      let defaultAddr = null;
+      if (token) {
+        const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          defaultAddr = data.addresses?.find((a: any) => a.isDefault) || data.addresses?.[0] || null;
+        }
+      }
+      
+      const itemPrice = product.discount_price || product.price;
+      const buyNowItem = {
+        _id: itemId,
+        product,
+        size: selectedSize,
+        quantity: 1
+      };
+      
+      localStorage.setItem('checkoutState', JSON.stringify({
+        cartItems: [buyNowItem],
+        summary: { subtotal: itemPrice, shippingCost: 0, total: itemPrice },
+        address: defaultAddr,
+        isBuyNow: true,
+        buyNowItemId: itemId
+      }));
+
+      if (!defaultAddr) {
+        navigate.push('/cart?changeAddress=true&buyNow=true');
+      } else {
+        navigate.push('/checkout');
+      }
     } catch (err) {
       showSnackbar("Error", "Failed to process order", "error");
     } finally {

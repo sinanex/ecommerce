@@ -142,7 +142,35 @@ export default function Cart() {
       }
       return;
     }
-    localStorage.setItem('checkoutState', JSON.stringify({ cartItems, summary: { subtotal, shippingCost, total }, address: addr }));
+
+    const params = new URLSearchParams(window.location.search);
+    const isBuyNowUrl = params.get('buyNow') === 'true';
+
+    const existingStateStr = localStorage.getItem('checkoutState');
+    let isBuyNow = false;
+    let buyNowItemId = null;
+    let itemsToCheckout = cartItems;
+    let currentSubtotal = subtotal;
+    let currentTotal = total;
+
+    if (existingStateStr && isBuyNowUrl) {
+      const existingState = JSON.parse(existingStateStr);
+      if (existingState.isBuyNow) {
+        isBuyNow = true;
+        buyNowItemId = existingState.buyNowItemId;
+        itemsToCheckout = existingState.cartItems;
+        currentSubtotal = existingState.summary.subtotal;
+        currentTotal = existingState.summary.total;
+      }
+    }
+
+    localStorage.setItem('checkoutState', JSON.stringify({ 
+      cartItems: itemsToCheckout, 
+      summary: { subtotal: currentSubtotal, shippingCost, total: currentTotal }, 
+      address: addr,
+      isBuyNow,
+      buyNowItemId
+    }));
     navigate.push('/checkout');
   };
 

@@ -216,9 +216,9 @@ export default function Home() {
 
               {/* Animating Loading Text */}
               <h2 className="font-h text-lg font-bold tracking-wider text-brand-on-surface uppercase mb-2">
-                Loading 
+                Loading
               </h2>
-              
+
               <AnimatePresence>
                 {showSpinUpMessage && (
                   <motion.p
@@ -237,166 +237,107 @@ export default function Home() {
           <>
             {/* Hero Section */}
             {banners.length > 0 && (
-          <section className="relative h-[55vh] md:h-[500px] w-full overflow-hidden bg-black">
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.div
-                key={currentBannerIndex}
-                initial={{ x: 300, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -300, opacity: 0 }}
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.5 }
-                }}
-                className="absolute inset-0"
-              >
-                <img
-                  className="w-full h-full object-cover"
-                  src={banners[currentBannerIndex]?.imageUrl || heroBanner}
-                  alt="Sports hero"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end px-6 md:px-[50px] pb-12 md:pb-20 w-full">
+              <section className="relative h-[55vh] w-full overflow-hidden bg-black">
+                <AnimatePresence mode="popLayout" initial={false}>
                   <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="max-w-3xl"
+                    key={currentBannerIndex}
+                    initial={{ x: 300, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -300, opacity: 0 }}
+                    transition={{
+                      x: { type: "spring", stiffness: 300, damping: 30 },
+                      opacity: { duration: 0.5 }
+                    }}
+                    className="absolute inset-0"
                   >
-                    {banners[currentBannerIndex]?.title && (
-                      <h1 className="font-h text-white mb-3 md:mb-6 text-[32px] md:text-[72px] leading-[1] font-black uppercase italic tracking-tighter">
-                        {banners[currentBannerIndex].title}
-                      </h1>
-                    )}
-                    {banners[currentBannerIndex]?.subtitle && (
-                      <p className="font-sans text-sm md:text-xl text-white/70 mb-6 md:mb-10 max-w-xl leading-relaxed">
-                        {banners[currentBannerIndex].subtitle}
-                      </p>
-                    )}
-                    {banners[currentBannerIndex]?.buttonText && (
-                      <button
-                        onClick={() => navigate.push(banners[currentBannerIndex]?.linkUrl || '/')}
-                        className="bg-brand-primary hover:bg-brand-primary-hover text-white px-8 py-4 md:px-12 md:py-5 rounded-xl md:rounded-2xl font-sans font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs transition-all hover:scale-[1.05] shadow-2xl shadow-brand-primary/40 cursor-pointer active:scale-95"
+                    <img
+                      className="w-full h-full object-cover"
+                      src={banners[currentBannerIndex]?.imageUrl || heroBanner}
+                      alt="Sports hero"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end px-6 md:px-[50px] pb-12 md:pb-20 w-full">
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="max-w-3xl"
                       >
-                        {banners[currentBannerIndex].buttonText}
-                      </button>
-                    )}
+                        {banners[currentBannerIndex]?.title && (
+                          <h1 className="font-h text-white mb-3 md:mb-6 text-[32px] md:text-[72px] leading-[1] font-black uppercase italic tracking-tighter">
+                            {banners[currentBannerIndex].title}
+                          </h1>
+                        )}
+                        {banners[currentBannerIndex]?.subtitle && (
+                          <p className="font-sans text-sm md:text-xl text-white/70 mb-6 md:mb-10 max-w-xl leading-relaxed">
+                            {banners[currentBannerIndex].subtitle}
+                          </p>
+                        )}
+                        {banners[currentBannerIndex]?.buttonText && (
+                          <button
+                            onClick={() => navigate.push(banners[currentBannerIndex]?.linkUrl || '/')}
+                            className="bg-brand-primary hover:bg-brand-primary-hover text-white px-8 py-4 md:px-12 md:py-5 rounded-xl md:rounded-2xl font-sans font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs transition-all hover:scale-[1.05] shadow-2xl shadow-brand-primary/40 cursor-pointer active:scale-95"
+                          >
+                            {banners[currentBannerIndex].buttonText}
+                          </button>
+                        )}
+                      </motion.div>
+                    </div>
                   </motion.div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                </AnimatePresence>
 
-            {/* Carousel Indicators */}
-            {banners.length > 1 && (
-              <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-3 z-30">
-                {banners.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentBannerIndex(idx)}
-                    className={cn(
-                      "h-1.5 rounded-full transition-all duration-500",
-                      currentBannerIndex === idx ? "w-12 bg-brand-primary" : "w-3 bg-white/30 hover:bg-white/60"
-                    )}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* Categories Section */}
-        {categories.length > 0 && (
-          <section className="py-3 bg-white w-full">
-            <div className="px-2 md:px-[50px] w-full">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                {categories.map((cat, idx) => (
-                  <motion.div
-                    key={cat._id || cat.name}
-                    className="group cursor-pointer transition-all duration-300 relative flex flex-col"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
-                    onClick={() => navigate.push(`/category/${encodeURIComponent(cat.name)}`)}
-                  >
-                    {cat.imageUrl ? (
-                      <div className="w-full aspect-[2/3] overflow-hidden rounded-xl bg-brand-surface-low">
-                        <img
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                          src={cat.imageUrl}
-                          alt={cat.name}
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-full aspect-[2/3] rounded-xl bg-brand-surface-low flex items-center justify-center">
-                        <div className="font-h text-brand-on-surface-variant opacity-20 text-6xl">?</div>
-                      </div>
-                    )}
-                    <p className="font-h text-base font-bold text-brand-on-surface text-center mt-2 tracking-wide">{cat.name}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-
-
-        {/* Trending Section */}
-        <section className="py-20 overflow-hidden w-full px-6 md:px-[50px]">
-          <div className="mb-10">
-            <h2 className="font-h text-[32px] font-bold">Trending Now</h2>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 pb-10">
-            {loading ? (
-              // Show loading skeleton cards in horizontal scroll (e.g., 4 items)
-              Array.from({ length: 4 }).map((_, idx) => (
-                <div key={idx} className="bg-white rounded-2xl md:rounded-3xl border border-brand-surface-normal p-3 md:p-4 space-y-3 md:space-y-4 animate-pulse">
-                  <div className="aspect-[3/4] bg-brand-surface-normal/40 rounded-xl md:rounded-2xl w-full" />
-                  <div className="h-3 bg-brand-surface-normal/50 rounded-full w-1/3" />
-                  <div className="space-y-2">
-                    <div className="h-4 bg-brand-surface-normal/60 rounded-full w-11/12" />
-                    <div className="h-4 bg-brand-surface-normal/60 rounded-full w-2/3" />
+                {/* Carousel Indicators */}
+                {banners.length > 1 && (
+                  <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-3 z-30">
+                    {banners.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentBannerIndex(idx)}
+                        className={cn(
+                          "h-1.5 rounded-full transition-all duration-500",
+                          currentBannerIndex === idx ? "w-12 bg-brand-primary" : "w-3 bg-white/30 hover:bg-white/60"
+                        )}
+                      />
+                    ))}
                   </div>
-                  <div className="flex justify-between items-center pt-2">
-                    <div className="h-5 bg-brand-surface-normal/70 rounded-full w-1/4" />
-                    <div className="h-8 w-8 md:h-10 md:w-10 bg-brand-surface-normal/70 rounded-lg md:rounded-xl" />
+                )}
+              </section>
+            )}
+
+            {/* Categories Section */}
+            {categories.length > 0 && (
+              <section className="py-3 bg-white w-full">
+                <div className="px-2 md:px-[50px] w-full">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                    {categories.map((cat, idx) => (
+                      <motion.div
+                        key={cat._id || cat.name}
+                        className="group cursor-pointer transition-all duration-300 relative flex flex-col"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: idx * 0.1 }}
+                        onClick={() => navigate.push(`/category/${encodeURIComponent(cat.name)}`)}
+                      >
+                        {cat.imageUrl ? (
+                          <div className="w-full aspect-[2/3] overflow-hidden rounded-xl bg-brand-surface-low">
+                            <img
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                              src={cat.imageUrl}
+                              alt={cat.name}
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full aspect-[2/3] rounded-xl bg-brand-surface-low flex items-center justify-center">
+                            <div className="font-h text-brand-on-surface-variant opacity-20 text-6xl">?</div>
+                          </div>
+                        )}
+                        <p className="font-h text-base font-bold text-brand-on-surface text-center mt-2 tracking-wide">{cat.name}</p>
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
-              ))
-            ) : products.length > 0 ? (
-              products.map((product) => {
-                const displayPrice = product.discount_price ? product.discount_price : product.price;
-                const originalPrice = product.discount_price ? product.price : undefined;
-                const isSoldOut = product.stock <= 0;
-                const mappedProduct: Product = {
-                  _id: product._id,
-                  id: product._id,
-                  name: product.name,
-                  category: product.category,
-                  price: displayPrice,
-                  originalPrice: originalPrice,
-                  images: product.images || [],
-                  image: product.images?.[0] || 'https://images.unsplash.com/photo-1541002442-9f5985aa8023',
-                  isNew: product.isNew || false,
-                  isSale: !!product.discount_price,
-                  stock: product.stock,
-                  salesTag: isSoldOut ? "Sold Out" : product.salesTag,
-                  salesTagColor: isSoldOut ? "#333333" : product.salesTagColor
-                };
-                return (
-                  <div key={product._id} className="w-full">
-                    <ProductCard product={mappedProduct} />
-                  </div>
-                );
-              })
-            ) : (
-              <div className="px-6 py-8 text-center text-brand-on-surface-variant font-sans font-bold w-full">
-                No trending products at the moment.
-              </div>
+              </section>
             )}
-          </div>
-        </section>
           </>
         )}
 

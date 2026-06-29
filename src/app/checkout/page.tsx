@@ -14,7 +14,7 @@ function CheckoutContent() {
   const { showSnackbar } = useSnackbar();
   const location = { pathname: usePathname(), search: useSearchParams() ? "?" + useSearchParams().toString() : "" };
   const navigate = useRouter();
-  const { clearCart } = useCart();
+  const { clearCart, removeFromCart } = useCart();
 
   const [checkoutState, setCheckoutState] = useState<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -91,8 +91,14 @@ function CheckoutContent() {
       if (response.ok) {
         const orderData = await response.json();
         localStorage.setItem('lastOrder', JSON.stringify(orderData));
+        
+        if (checkoutState?.isBuyNow && checkoutState?.buyNowItemId) {
+          await removeFromCart(checkoutState.buyNowItemId);
+        } else {
+          clearCart();
+        }
+        
         localStorage.removeItem('checkoutState');
-        clearCart();
         showSnackbar("Success", "Order placed successfully!", "success");
         navigate.push('/success');
       } else {

@@ -285,6 +285,8 @@ const AdminDashboard = () => {
   const [teams, setTeams] = useState<any[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryImage, setNewCategoryImage] = useState<any>(null);
+  const [isCategoryEditMode, setIsCategoryEditMode] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [selectedParentCategoryId, setSelectedParentCategoryId] = useState('');
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
   const handleDirectFieldChange = (index, name, value) => {
@@ -550,8 +552,13 @@ const AdminDashboard = () => {
         formData.append('image', newCategoryImage);
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/categories`, {
-        method: 'POST',
+      const url = isCategoryEditMode 
+        ? `${API_BASE_URL}/api/categories/${editingCategoryId}`
+        : `${API_BASE_URL}/api/categories`;
+      const method = isCategoryEditMode ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -563,14 +570,16 @@ const AdminDashboard = () => {
         setNewCategoryName('');
         setNewCategoryImage(null);
         setShowAddCategory(false);
+        setIsCategoryEditMode(false);
+        setEditingCategoryId(null);
         fetchCategories();
-        showSnackbar('Success', 'Category created successfully!', 'success');
+        showSnackbar('Success', `Category ${isCategoryEditMode ? 'updated' : 'created'} successfully!`, 'success');
       } else {
-        showSnackbar('Error', data.message || 'Failed to create category', 'error');
+        showSnackbar('Error', data.message || `Failed to ${isCategoryEditMode ? 'update' : 'create'} category`, 'error');
       }
     } catch (error) {
-      console.error('Error creating category:', error);
-      showSnackbar('Error', 'Error creating category', 'error');
+      console.error('Error saving category:', error);
+      showSnackbar('Error', 'Error saving category', 'error');
     }
   };
 
@@ -1362,7 +1371,15 @@ const AdminDashboard = () => {
                 <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60 mt-1">Organize your store hierarchy</p>
               </div>
               <button
-                onClick={() => setShowAddCategory(!showAddCategory)}
+                onClick={() => {
+                  setShowAddCategory(!showAddCategory);
+                  if (!showAddCategory) {
+                    setIsCategoryEditMode(false);
+                    setEditingCategoryId(null);
+                    setNewCategoryName('');
+                    setNewCategoryImage(null);
+                  }
+                }}
                 className="bg-brand-primary text-white text-sm px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-brand-primary/20 hover:bg-black transition-colors"
               >
                 {showAddCategory ? <X size={18} /> : <Plus size={18} />}
@@ -1372,8 +1389,8 @@ const AdminDashboard = () => {
 
             {showAddCategory ? (
               <div className="bg-white p-5 rounded-xl shadow-xl border border-brand-surface-normal">
-                <h3 className="font-h text-lg font-bold text-brand-on-surface mb-2">Create Category (Jersey Type)</h3>
-                <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60 mb-8">Add a new jersey type or category</p>
+                <h3 className="font-h text-lg font-bold text-brand-on-surface mb-2">{isCategoryEditMode ? 'Edit Category' : 'Create Category (Jersey Type)'}</h3>
+                <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60 mb-8">{isCategoryEditMode ? 'Modify category details' : 'Add a new jersey type or category'}</p>
                 <form onSubmit={handleCreateCategory} className="space-y-6 max-w-xl">
                   <div>
                     <label className="block font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 mb-2 ml-2">Category Name (Type)*</label>
@@ -1403,7 +1420,7 @@ const AdminDashboard = () => {
                     type="submit"
                     className="bg-brand-primary hover:bg-black text-white px-4 py-2 rounded-md font-semibold w-full transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-brand-primary/20"
                   >
-                    <Plus size={20} strokeWidth={3} /> Save Category
+                    {isCategoryEditMode ? <Edit size={20} strokeWidth={3} /> : <Plus size={20} strokeWidth={3} />} {isCategoryEditMode ? 'Update Category' : 'Save Category'}
                   </button>
                 </form>
               </div>
@@ -1435,13 +1452,28 @@ const AdminDashboard = () => {
                         )}
                         <div className="p-4 flex justify-between items-center bg-white z-10 border-t border-brand-surface-normal">
                           <h4 className="font-h text-lg font-bold text-brand-on-surface">{cat.name}</h4>
-                          <button
-                            onClick={() => handleDeleteCategory(cat._id)}
-                            className="text-brand-on-surface-variant opacity-40 hover:opacity-100 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-all active:scale-90"
-                            title="Delete Category"
-                          >
-                            <Trash2 size={20} />
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setIsCategoryEditMode(true);
+                                setEditingCategoryId(cat._id);
+                                setNewCategoryName(cat.name);
+                                setNewCategoryImage(null);
+                                setShowAddCategory(true);
+                              }}
+                              className="text-brand-on-surface-variant opacity-40 hover:opacity-100 hover:text-blue-500 hover:bg-blue-50 p-2 rounded-xl transition-all active:scale-90"
+                              title="Edit Category"
+                            >
+                              <Edit size={20} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCategory(cat._id)}
+                              className="text-brand-on-surface-variant opacity-40 hover:opacity-100 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-all active:scale-90"
+                              title="Delete Category"
+                            >
+                              <Trash2 size={20} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -2068,8 +2100,8 @@ const AdminDashboard = () => {
                               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                               body: JSON.stringify({ status: order.status, trackingId: val })
                             });
-                             showSnackbar('Success', 'Updated', 'success');
-                             fetchOrders();
+                            showSnackbar('Success', 'Updated', 'success');
+                            fetchOrders();
                           }
                         }}
                         className="bg-brand-primary text-white px-4 py-2.5 rounded-xl font-bold text-sm h-[42px] flex items-center justify-center shadow-md active:scale-95 transition-transform"
@@ -2339,7 +2371,7 @@ const AdminDashboard = () => {
                           <img src={banner.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={banner.title} />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
 
-                          <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
+                          <div className="absolute top-4 right-4 flex items-center gap-2">
                             <button
                               onClick={() => {
                                 setIsBannerEditMode(true);

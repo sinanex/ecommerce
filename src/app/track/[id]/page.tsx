@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Check, Circle, Truck, MapPin, PackageCheck, Phone, MessageSquare, ChevronRight, ShoppingBag, Package, PartyPopper } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -27,6 +27,7 @@ function formatDateRange(from: Date, to: Date): string {
 
 export default function TrackOrder() {
   const { id } = useParams();
+  const router = useRouter();
   const [order, setOrder] = React.useState<any>(null);
   const [settings, setSettings] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
@@ -86,13 +87,22 @@ export default function TrackOrder() {
       <main className="max-w-4xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 space-y-8">
           {/* Breadcrumbs */}
-          <nav className="flex items-center space-x-2 text-xs font-sans text-brand-on-surface-variant mb-4 uppercase tracking-widest">
+          <nav className="flex items-center space-x-2 text-xs font-sans text-brand-on-surface-variant mb-4 uppercase tracking-widest opacity-80">
             <Link className="hover:text-brand-primary transition-colors" href="/">Home</Link>
-            <ChevronRight size={14} />
+            <ChevronRight size={12} className="opacity-60" />
             <Link className="hover:text-brand-primary transition-colors" href="/orders">Orders</Link>
-            <ChevronRight size={14} />
+            <ChevronRight size={12} className="opacity-60" />
             <span className="text-brand-on-surface font-black">Track Order</span>
           </nav>
+
+          {/* Back Button */}
+          <button
+            onClick={() => router.push('/orders')}
+            className="flex items-center gap-2 text-brand-on-surface-variant hover:text-brand-primary transition-colors font-sans font-bold text-sm mb-6 cursor-pointer"
+          >
+            <ArrowLeft size={18} />
+            Back
+          </button>
 
           {/* Order Details */}
           <section className="bg-white rounded-[32px] p-8 shadow-xl border border-brand-surface-normal">

@@ -1388,15 +1388,15 @@ const AdminDashboard = () => {
                   </div>
                   <div>
                     <label className="block font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 mb-2 ml-2">Category Image (Optional)</label>
-                    
+
                     {(newCategoryImage || existingCategoryImage) && (
                       <div className="mb-4 w-32 h-40 rounded-xl overflow-hidden border border-brand-surface-normal bg-brand-surface-low relative group">
-                        <img 
-                          src={newCategoryImage ? URL.createObjectURL(newCategoryImage) : existingCategoryImage} 
-                          alt="Category Preview" 
+                        <img
+                          src={newCategoryImage ? URL.createObjectURL(newCategoryImage) : existingCategoryImage}
+                          alt="Category Preview"
                           className="w-full h-full object-cover"
                         />
-                        <button 
+                        <button
                           type="button"
                           onClick={() => {
                             setNewCategoryImage(null);
@@ -2326,8 +2326,7 @@ const AdminDashboard = () => {
                               <Upload size={32} />
                             </div>
                             <p className="font-h text-base font-bold text-brand-on-surface mb-2">Upload Banner Image</p>
-                            <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60">Click or drag & drop</p>
-                            <p className="font-sans text-[10px] text-brand-on-surface-variant opacity-40 mt-4">Recommended: 1920x1080px (16:9 ratio)</p>
+                            <p className="font-sans text-[10px] text-brand-on-surface-variant opacity-40 mt-4">Recommended: Portrait/Square ratio (e.g., 4:5 ratio / 1080x1350px or 1:1 ratio) for best mobile visibility.</p>
                           </div>
                         )}
                       </div>

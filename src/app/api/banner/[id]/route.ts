@@ -13,6 +13,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const id = (await params).id;
+    const oldBanner = await (Banner as any).findById(id);
+    if (!oldBanner) return NextResponse.json({ message: 'Banner not found' }, { status: 404 });
+
     const formData = await req.formData();
     const title = formData.get('title') as string;
     const subtitle = formData.get('subtitle') as string;
@@ -23,6 +26,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const updateData: any = { title, subtitle, buttonText, linkUrl };
     
     if (image) {
+      if (oldBanner.imageUrl) {
+        try {
+          await deleteFromCloudinary(oldBanner.imageUrl);
+        } catch (e) {
+          console.error("Failed to delete old banner image", e);
+        }
+      }
       updateData.imageUrl = await uploadToCloudinary(image, 'kitbay/banners');
     }
 
@@ -49,13 +59,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     if (banner.imageUrl) {
       try {
-        const uploadIndex = banner.imageUrl.indexOf('/upload/');
-        if (uploadIndex !== -1) {
-          const afterUpload = banner.imageUrl.substring(uploadIndex + 8);
-          const withoutVersion = afterUpload.substring(afterUpload.indexOf('/') + 1);
-          const publicId = withoutVersion.substring(0, withoutVersion.lastIndexOf('.'));
-          if (publicId) await deleteFromCloudinary(publicId);
-        }
+        await deleteFromCloudinary(banner.imageUrl);
       } catch (e) {
         console.error("Failed to delete banner image from Cloudinary", banner.imageUrl, e);
       }

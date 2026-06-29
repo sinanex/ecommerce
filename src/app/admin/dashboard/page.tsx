@@ -225,7 +225,6 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const [banners, setBanners] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
   const [orderCurrentPage, setOrderCurrentPage] = useState(1);
@@ -285,6 +284,7 @@ const AdminDashboard = () => {
   const [teams, setTeams] = useState<any[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryImage, setNewCategoryImage] = useState<any>(null);
+  const [existingCategoryImage, setExistingCategoryImage] = useState('');
   const [isCategoryEditMode, setIsCategoryEditMode] = useState(false);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [selectedParentCategoryId, setSelectedParentCategoryId] = useState('');
@@ -320,7 +320,6 @@ const AdminDashboard = () => {
     if (activeTab === 'orders' || activeTab === 'dashboard') {
       fetchProducts();
       fetchOrders();
-      fetchUsers();
     }
     if (activeTab === 'dashboard') {
       fetchCloudinaryUsage();
@@ -331,9 +330,6 @@ const AdminDashboard = () => {
     }
     if (activeTab === 'banner') {
       fetchBanner();
-    }
-    if (activeTab === 'users') {
-      fetchUsers();
     }
     if (activeTab === 'orders') {
       fetchOrders();
@@ -370,21 +366,6 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching cloudinary usage:', error);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${API_BASE_URL}/api/users/all`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setUsers(data);
-      }
-    } catch (error) {
-      console.error('Error fetching users:', error);
     }
   };
 
@@ -569,6 +550,7 @@ const AdminDashboard = () => {
       if (response.ok) {
         setNewCategoryName('');
         setNewCategoryImage(null);
+        setExistingCategoryImage('');
         setShowAddCategory(false);
         setIsCategoryEditMode(false);
         setEditingCategoryId(null);
@@ -1378,6 +1360,7 @@ const AdminDashboard = () => {
                     setEditingCategoryId(null);
                     setNewCategoryName('');
                     setNewCategoryImage(null);
+                    setExistingCategoryImage('');
                   }
                 }}
                 className="bg-brand-primary text-white text-sm px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-brand-primary/20 hover:bg-black transition-colors"
@@ -1405,6 +1388,27 @@ const AdminDashboard = () => {
                   </div>
                   <div>
                     <label className="block font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 mb-2 ml-2">Category Image (Optional)</label>
+                    
+                    {(newCategoryImage || existingCategoryImage) && (
+                      <div className="mb-4 w-32 h-40 rounded-xl overflow-hidden border border-brand-surface-normal bg-brand-surface-low relative group">
+                        <img 
+                          src={newCategoryImage ? URL.createObjectURL(newCategoryImage) : existingCategoryImage} 
+                          alt="Category Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setNewCategoryImage(null);
+                            setExistingCategoryImage('');
+                          }}
+                          className="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center text-white backdrop-blur-sm transition-all"
+                        >
+                          <X size={24} />
+                        </button>
+                      </div>
+                    )}
+
                     <input
                       type="file"
                       accept="image/*"
@@ -1459,6 +1463,7 @@ const AdminDashboard = () => {
                                 setEditingCategoryId(cat._id);
                                 setNewCategoryName(cat.name);
                                 setNewCategoryImage(null);
+                                setExistingCategoryImage(cat.imageUrl || '');
                                 setShowAddCategory(true);
                               }}
                               className="text-brand-on-surface-variant opacity-40 hover:opacity-100 hover:text-blue-500 hover:bg-blue-50 p-2 rounded-xl transition-all active:scale-90"
@@ -2094,11 +2099,12 @@ const AdminDashboard = () => {
                         onClick={async () => {
                           const val = (document.getElementById(`tracking-input-${order._id}`) as HTMLInputElement)?.value;
                           if (val !== undefined && val !== order.trackingId) {
+                            const newStatus = val.trim() ? 'Shipped' : order.status;
                             const token = localStorage.getItem('adminToken');
                             await fetch(`${API_BASE_URL}/api/orders/${order._id}/status`, {
                               method: 'PUT',
                               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                              body: JSON.stringify({ status: order.status, trackingId: val })
+                              body: JSON.stringify({ status: newStatus, trackingId: val })
                             });
                             showSnackbar('Success', 'Updated', 'success');
                             fetchOrders();
@@ -2422,90 +2428,7 @@ const AdminDashboard = () => {
             )}
           </div>
         );
-      case 'users':
-        return (
-          <div className="space-y-5 max-w-7xl mx-auto">
-            <div className="flex justify-between items-center bg-white p-4 md:p-6 rounded-lg shadow-sm border border-brand-surface-normal">
-              <div>
-                <h2 className="font-h text-base font-bold text-brand-on-surface uppercase tracking-tight">User Management</h2>
-                <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60 mt-1">Directory of registered customers</p>
-              </div>
-              <div className="bg-brand-primary text-white text-sm px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-brand-primary/20">
-                <Users size={18} />
-                {users.length} Total Users
-              </div>
-            </div>
 
-            <div className="bg-white rounded-xl shadow-xl border border-brand-surface-normal overflow-hidden overflow-x-auto p-4">
-              <table className="w-full text-left min-w-[800px]">
-                <thead className="bg-brand-surface-low border-b border-brand-surface-normal">
-                  <tr>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tl-2xl">Customer Details</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Saved Addresses</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tr-2xl text-right">Joined Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-brand-surface-normal">
-                  {users.map((user: any) => (
-                    <tr key={user._id} className="hover:bg-brand-surface-low/50 transition-colors align-top group">
-                      <td className="px-6 py-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-8 h-8 bg-brand-surface rounded-xl flex items-center justify-center text-brand-primary border border-brand-surface-normal group-hover:bg-brand-primary group-hover:text-white transition-colors">
-                            <Users size={20} strokeWidth={2.5} />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <span className="font-h text-lg font-bold text-brand-on-surface">{user.phone}</span>
-                            <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-brand-on-surface-variant opacity-60">Registered User</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="space-y-3">
-                          {user.addresses && user.addresses.length > 0 ? (
-                            user.addresses.map((addr: any, idx: number) => (
-                              <div key={idx} className="bg-brand-surface p-4 rounded-md border border-brand-surface-normal group-hover:border-brand-primary/20 transition-colors">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="font-h font-bold text-brand-on-surface">{addr.name}</span>
-                                  <span className="text-xs font-medium text-gray-500 text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-md">{addr.addressType}</span>
-                                </div>
-                                <p className="font-sans text-xs text-brand-on-surface-variant opacity-80 leading-relaxed">
-                                  {addr.address}, {addr.locality}, {addr.city} - {addr.pincode}
-                                </p>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="bg-brand-surface p-4 rounded-md border border-brand-surface-normal border-dashed text-center">
-                              <span className="font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-40">No addresses saved</span>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-6 text-right">
-                        <div className="inline-flex flex-col items-end gap-1 bg-brand-surface-low px-4 py-2 rounded-xl">
-                          <span className="font-h font-bold text-brand-on-surface">{new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                          <span className="text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">
-                            {new Date(user.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {users.length === 0 && (
-                    <tr>
-                      <td colSpan={3} className="px-6 py-16 text-center">
-                        <div className="w-10 h-10 bg-brand-surface rounded-full flex items-center justify-center mx-auto mb-4 text-brand-on-surface-variant opacity-40">
-                          <Users size={32} />
-                        </div>
-                        <p className="font-h text-base font-bold text-brand-on-surface">No Users Found</p>
-                        <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60 mt-2">Registered users will appear here</p>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
       case 'settings':
         return (
           <div className="space-y-6 max-w-4xl mx-auto">
@@ -2680,7 +2603,6 @@ const AdminDashboard = () => {
     { id: 'all-products', label: 'Manage Products', icon: <Package size={20} /> },
     { id: 'categories', label: 'Categories', icon: <Tags size={20} /> },
     { id: 'banner', label: 'Home Banner', icon: <LayoutDashboard size={20} /> },
-    { id: 'users', label: 'Users', icon: <Users size={20} /> },
     { id: 'settings', label: 'Settings', icon: <SettingsIcon size={20} /> },
   ];
 

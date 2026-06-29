@@ -26,13 +26,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (image) {
       if (category.imageUrl) {
         try {
-          const uploadIndex = category.imageUrl.indexOf('/upload/');
-          if (uploadIndex !== -1) {
-            const afterUpload = category.imageUrl.substring(uploadIndex + 8);
-            const withoutVersion = afterUpload.substring(afterUpload.indexOf('/') + 1);
-            const publicId = withoutVersion.substring(0, withoutVersion.lastIndexOf('.'));
-            if (publicId) await deleteFromCloudinary(publicId);
-          }
+          await deleteFromCloudinary(category.imageUrl);
         } catch (e) {
           console.error("Failed to delete old image", e);
         }
@@ -57,13 +51,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     if (category.imageUrl) {
       try {
-        const uploadIndex = category.imageUrl.indexOf('/upload/');
-        if (uploadIndex !== -1) {
-          const afterUpload = category.imageUrl.substring(uploadIndex + 8);
-          const withoutVersion = afterUpload.substring(afterUpload.indexOf('/') + 1);
-          const publicId = withoutVersion.substring(0, withoutVersion.lastIndexOf('.'));
-          if (publicId) await deleteFromCloudinary(publicId);
-        }
+        await deleteFromCloudinary(category.imageUrl);
       } catch (e) {
         console.error("Failed to delete category image from Cloudinary", category.imageUrl, e);
       }

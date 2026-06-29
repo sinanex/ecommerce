@@ -23,6 +23,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (!auth.isAdmin) return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
 
     const id = (await params).id;
+    const oldProduct = await (Product as any).findById(id);
+    if (!oldProduct) return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+
     const formData = await req.formData();
     const updateQuery: any = {};
     
@@ -115,6 +118,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     if (Object.keys(unsetFields).length > 0) updateQuery.$unset = unsetFields;
 
+    // Delete orphaned images from Cloudinary
+    if (updateQuery.images && Array.isArray(oldProduct.images)) {
+      const newImages = updateQuery.images as string[];
+      for (const oldImg of oldProduct.images) {
+        if (!newImages.includes(oldImg)) {
+          try {
+            await deleteFromCloudinary(oldImg);
+          } catch (e) {
+            console.error("Failed to delete orphaned product image", oldImg, e);
+          }
+        }
+      }
+    }
+
     const updatedProduct = await (Product as any).findByIdAndUpdate(id, updateQuery, { new: true, runValidators: true });
     if (!updatedProduct) return NextResponse.json({ message: 'Product not found' }, { status: 404 });
     
@@ -137,15 +154,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     if (deletedProduct.images && Array.isArray(deletedProduct.images)) {
       for (const imgUrl of deletedProduct.images) {
         try {
-          const uploadIndex = imgUrl.indexOf('/upload/');
-          if (uploadIndex !== -1) {
-            const afterUpload = imgUrl.substring(uploadIndex + 8);
-            const withoutVersion = afterUpload.substring(afterUpload.indexOf('/') + 1);
-            const publicId = withoutVersion.substring(0, withoutVersion.lastIndexOf('.'));
-            if (publicId) {
-              await deleteFromCloudinary(publicId);
-            }
-          }
+          await deleteFromCloudinary(imgUrl);
         } catch (e) {
           console.error("Failed to delete image from Cloudinary", imgUrl, e);
         }

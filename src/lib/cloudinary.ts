@@ -23,7 +23,39 @@ export const uploadToCloudinary = async (file: File, folder: string): Promise<st
   });
 };
 
-export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
+export const extractPublicId = (url: string): string | null => {
+  if (!url) return null;
+  
+  // If it's already a public ID (doesn't start with http/https), return as is
+  if (!url.startsWith('http')) return url;
+
+  try {
+    const parts = url.split('/upload/');
+    if (parts.length !== 2) return null;
+    let path = parts[1];
+    
+    // Check if the path starts with a version number like "v123456789/"
+    if (/^v\d+\//.test(path)) {
+      path = path.substring(path.indexOf('/') + 1);
+    }
+    
+    // Remove the extension
+    const lastDot = path.lastIndexOf('.');
+    if (lastDot !== -1) {
+      path = path.substring(0, lastDot);
+    }
+    return path;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const deleteFromCloudinary = async (urlOrPublicId: string): Promise<void> => {
+  const publicId = extractPublicId(urlOrPublicId);
+  if (!publicId) {
+    return Promise.resolve(); // Nothing to delete
+  }
+
   return new Promise((resolve, reject) => {
     cloudinary.uploader.destroy(publicId, (error, result) => {
       if (error) {

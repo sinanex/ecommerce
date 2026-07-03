@@ -232,14 +232,15 @@ function CheckoutContent() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="bg-brand-on-surface text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">{address.addressType}</span>
                     <h3 className="font-bold text-brand-on-surface">{address.name}</h3>
                   </div>
                   <p className="font-sans text-sm text-brand-on-surface-variant leading-relaxed">
                     {address.address}, {address.locality}<br />
-                    {address.city}, {address.state} - <span className="font-bold">{address.pincode}</span>
+                    {address.city} - <span className="font-bold">{address.pincode}</span>
                   </p>
-                  <p className="font-sans text-sm font-bold text-brand-on-surface mt-2">{address.phone}</p>
+                  <p className="font-sans text-sm font-bold text-brand-on-surface mt-2">
+                    {address.phone} {address.alternatePhone && ` / ${address.alternatePhone}`}
+                  </p>
                 </div>
               </div>
             </section>

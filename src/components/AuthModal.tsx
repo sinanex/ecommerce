@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Phone, ShieldCheck, ArrowRight } from 'lucide-react';
+import { X, Phone, ArrowRight } from 'lucide-react';
 import { API_BASE_URL } from '@/config';
 import { useCart } from '@/context/CartContext';
 
@@ -12,13 +12,11 @@ interface AuthModalProps {
 
 export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
   const { mergeCart } = useCart();
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSendOtp = async (e: React.FormEvent) => {
+  const handleContinue = async (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.length < 10) {
       setError('Please enter a valid phone number');
@@ -26,47 +24,35 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     }
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+      // Call send-otp to initialize the process just in case the backend requires it
+      const sendRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone })
       });
-      if (response.ok) {
-        setStep('otp');
-        setError('');
-      } else {
-        const data = await response.json();
-        setError(data.message || 'Failed to send OTP');
-      }
-    } catch (err) {
-      setError('Connection error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (otp !== '0000') {
-      setError('Invalid OTP. Use 0000');
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
+      if (!sendRes.ok) {
+        const data = await sendRes.json();
+        setError(data.message || 'Failed to initialize login');
+        setLoading(false);
+        return;
+      }
+
+      // Automatically verify with 0000
+      const verifyRes = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otp })
+        body: JSON.stringify({ phone, otp: '0000' })
       });
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem('userToken', data.token);
-        localStorage.setItem('userData', JSON.stringify(data.user));
+      const verifyData = await verifyRes.json();
+      if (verifyRes.ok) {
+        localStorage.setItem('userToken', verifyData.token);
+        localStorage.setItem('userData', JSON.stringify(verifyData.user));
         await mergeCart();
         onSuccess();
         onClose();
       } else {
-        setError(data.message || 'Login failed');
+        setError(verifyData.message || 'Login failed');
       }
     } catch (err) {
       setError('Connection error');
@@ -101,20 +87,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
             <div className="p-8 pt-12">
               <div className="w-16 h-16 bg-brand-primary/10 rounded-2xl flex items-center justify-center mb-8 mx-auto">
-                {step === 'phone' ? (
-                  <Phone size={32} className="text-brand-primary" />
-                ) : (
-                  <ShieldCheck size={32} className="text-brand-primary" />
-                )}
+                <Phone size={32} className="text-brand-primary" />
               </div>
 
               <h2 className="font-h text-2xl font-bold text-center mb-2">
-                {step === 'phone' ? 'Welcome to 6YARD' : 'Verify Identity'}
+                Welcome to 6YARD
               </h2>
               <p className="font-sans text-brand-on-surface-variant text-center mb-8">
-                {step === 'phone' 
-                  ? 'Enter your phone number to continue' 
-                  : `Enter the 4-digit code sent to +91 ${phone}`}
+                Enter your phone number to continue
               </p>
 
               {error && (
@@ -123,54 +103,28 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 </div>
               )}
 
-              {step === 'phone' ? (
-                <form onSubmit={handleSendOtp} className="space-y-4">
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-sans font-bold text-brand-on-surface">
-                      +91
-                    </span>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                      placeholder="00000 00000"
-                      className="w-full pl-14 pr-4 py-4 bg-brand-surface border border-brand-surface-normal rounded-2xl font-sans focus:outline-none focus:border-brand-primary transition-colors"
-                      autoFocus
-                    />
-                  </div>
-                  <button
-                    disabled={loading}
-                    className="w-full bg-brand-primary text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-widest text-xs hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
-                  >
-                    {loading ? 'Sending...' : 'Send OTP'}
-                    {!loading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <form onSubmit={handleContinue} className="space-y-4">
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-sans font-bold text-brand-on-surface">
+                    +91
+                  </span>
                   <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.slice(0, 4))}
-                    placeholder="Enter OTP (0000)"
-                    className="w-full px-4 py-4 bg-brand-surface border border-brand-surface-normal rounded-2xl font-sans text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-brand-primary transition-colors"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="00000 00000"
+                    className="w-full pl-14 pr-4 py-4 bg-brand-surface border border-brand-surface-normal rounded-2xl font-sans focus:outline-none focus:border-brand-primary transition-colors"
                     autoFocus
                   />
-                  <button
-                    disabled={loading}
-                    className="w-full bg-black text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-widest text-xs hover:bg-gray-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    {loading ? 'Verifying...' : 'Verify & Continue'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setStep('phone')}
-                    className="w-full text-brand-on-surface-variant font-sans font-bold text-xs uppercase tracking-widest hover:text-brand-on-surface transition-colors py-2"
-                  >
-                    Change Number
-                  </button>
-                </form>
-              )}
+                </div>
+                <button
+                  disabled={loading}
+                  className="w-full bg-brand-primary text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-widest text-xs hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+                >
+                  {loading ? 'Processing...' : 'Continue'}
+                  {!loading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+                </button>
+              </form>
             </div>
 
             <div className="p-6 bg-brand-surface-low border-t border-brand-surface-normal text-center">

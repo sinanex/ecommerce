@@ -24,7 +24,7 @@ export default function Cart() {
   const [user, setUser] = useState<any>(null);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [newAddress, setNewAddress] = useState({
-    name: '', phone: '', pincode: '', locality: '', address: '', city: '', state: '', country: 'India', landmark: '', alternatePhone: '', addressType: 'Home'
+    name: '', phone: '', pincode: '', locality: '', address: '', city: '', state: 'Kerala', country: 'India', landmark: '', alternatePhone: '', addressType: 'Home'
   });
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
@@ -476,35 +476,28 @@ export default function Cart() {
                     <button type="button" onClick={() => { setIsAddingAddress(false); setIsEditingAddressId(null); }} className="flex items-center gap-2 text-brand-primary font-bold text-xs uppercase tracking-widest mb-4">
                       <ChevronLeft size={16} /> Back to addresses
                     </button>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <input type="text" placeholder="Full Name" required value={newAddress.name} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, name: e.target.value })} />
-                      <input type="tel" placeholder="Phone Number" required value={newAddress.phone} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, phone: e.target.value })} />
-                      <input type="text" placeholder="Pincode" required value={newAddress.pincode} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, pincode: e.target.value })} />
-                      <input type="text" placeholder="Locality" required value={newAddress.locality} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, locality: e.target.value })} />
-                    </div>
-                    <textarea placeholder="House/Flat Number & Street Address" required value={newAddress.address} rows={3} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans resize-none text-sm" onChange={e => setNewAddress({ ...newAddress, address: e.target.value })} />
-                    <input type="text" placeholder="Landmark (Optional)" value={newAddress.landmark} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, landmark: e.target.value })} />
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <input type="text" placeholder="City" required value={newAddress.city} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} />
-                      <input type="text" placeholder="State" required value={newAddress.state} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, state: e.target.value })} />
-                      <input type="text" placeholder="Country" required value={newAddress.country} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, country: e.target.value })} />
-                    </div>
-                    <div className="flex gap-4">
-                      {['Home', 'Work'].map(type => (
-                        <button key={type} type="button" onClick={() => setNewAddress({ ...newAddress, addressType: type })} className={`flex-1 py-3 rounded-xl font-sans font-bold text-xs uppercase tracking-widest border-2 transition-all ${newAddress.addressType === type ? 'border-brand-primary bg-brand-primary/5 text-brand-primary' : 'border-brand-surface-normal text-brand-on-surface-variant'}`}>
-                          {type}
-                        </button>
-                      ))}
-                    </div>
-                    <button type="submit" className="w-full bg-brand-primary text-white py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-xs shadow-xl shadow-brand-primary/20">
-                      {isEditingAddressId ? 'Update Address' : 'Save and Deliver Here'}
-                    </button>
-                  </form>
-                ) : (
+                      <div className="space-y-4">
+                        <input type="text" placeholder="Name" required value={newAddress.name} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, name: e.target.value })} />
+                        <textarea placeholder="Address" required value={newAddress.address} rows={3} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans resize-none text-sm" onChange={e => setNewAddress({ ...newAddress, address: e.target.value })} />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <input type="text" placeholder="Post Name" required value={newAddress.locality} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, locality: e.target.value })} />
+                          <input type="text" placeholder="Place" required value={newAddress.city} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} />
+                          <input type="text" placeholder="Pincode" required pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" value={newAddress.pincode} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })} />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input type="tel" placeholder="Mobile 1" required pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" value={newAddress.phone} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
+                          <input type="tel" placeholder="Mobile 2 (Optional)" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" value={newAddress.alternatePhone} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, alternatePhone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
+                        </div>
+                      </div>
+                      <button type="submit" className="w-full bg-brand-primary text-white py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-xs shadow-xl shadow-brand-primary/20 mt-4">
+                        {isEditingAddressId ? 'Update Address' : 'Save and Deliver Here'}
+                      </button>
+                    </form>
+                  ) : (
                   <div className="space-y-4">
                     {(!user?.addresses || user.addresses.length === 0) && (
                       <button onClick={() => {
-                        setNewAddress({ name: '', phone: '', pincode: '', locality: '', address: '', city: '', state: '', country: 'India', landmark: '', alternatePhone: '', addressType: 'Home' });
+                        setNewAddress({ name: '', phone: '', pincode: '', locality: '', address: '', city: '', state: 'Kerala', country: 'India', landmark: '', alternatePhone: '', addressType: 'Home' });
                         setIsEditingAddressId(null);
                         setIsAddingAddress(true);
                       }} className="w-full p-6 border-2 border-dashed border-brand-surface-normal rounded-2xl text-brand-primary font-bold flex items-center justify-center gap-2 hover:border-brand-primary hover:bg-brand-primary/5 transition-all mb-4">
@@ -519,7 +512,6 @@ export default function Cart() {
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="bg-brand-surface-low text-brand-on-surface-variant text-[10px] font-black px-2 py-1 rounded-md uppercase">{addr.addressType}</span>
                             <h3 className="font-bold text-brand-on-surface">{addr.name}</h3>
                           </div>
                           <div className="flex items-center gap-3">
@@ -533,7 +525,7 @@ export default function Cart() {
                                   locality: addr.locality || '',
                                   address: addr.address || '',
                                   city: addr.city || '',
-                                  state: addr.state || '',
+                                  state: addr.state || 'Kerala',
                                   country: addr.country || 'India',
                                   landmark: addr.landmark || '',
                                   alternatePhone: addr.alternatePhone || '',
@@ -550,8 +542,10 @@ export default function Cart() {
                           </div>
                         </div>
                         <p className="font-sans text-sm text-brand-on-surface-variant leading-relaxed mb-1">{addr.address}, {addr.locality}</p>
-                        <p className="font-sans text-sm text-brand-on-surface-variant leading-relaxed mb-3">{addr.city}, {addr.state} - <span className="font-bold">{addr.pincode}</span></p>
-                        <p className="font-sans text-sm font-bold text-brand-on-surface">{addr.phone}</p>
+                        <p className="font-sans text-sm text-brand-on-surface-variant leading-relaxed mb-3">{addr.city} - <span className="font-bold">{addr.pincode}</span></p>
+                        <p className="font-sans text-sm font-bold text-brand-on-surface">
+                          {addr.phone} {addr.alternatePhone && ` / ${addr.alternatePhone}`}
+                        </p>
                       </div>
                     ))}
                   </div>

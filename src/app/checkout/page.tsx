@@ -41,9 +41,9 @@ function CheckoutContent() {
 
   // Compute dynamic shipping and total
   const codAmount = settings?.codDeliveryAmount || 100;
-  const dynamicShippingCost = paymentMethod === 'online' ? 0 : codAmount;
-  const dynamicTotal = summary.subtotal + dynamicShippingCost;
-  const payableAmount = paymentMethod === 'cod' ? codAmount : dynamicTotal;
+  const isCod = paymentMethod === 'cod';
+  const dynamicTotal = summary.subtotal;
+  const payableAmount = isCod ? codAmount : dynamicTotal;
 
   // Redirect if no data (e.g., direct URL access)
   React.useEffect(() => {
@@ -69,14 +69,14 @@ function CheckoutContent() {
           quantity: item.quantity
         })),
         shippingAddress: address,
-        paymentMethod: paymentMethod,
+        paymentMethod: isCod ? 'cod' : 'online',
         totalAmount: dynamicTotal,
-        shippingCharge: dynamicShippingCost,
+        shippingCharge: 0,
         subtotal: summary.subtotal,
         razorpayPaymentId: paymentDetails?.razorpayPaymentId,
         razorpayOrderId: paymentDetails?.razorpayOrderId,
         razorpaySignature: paymentDetails?.razorpaySignature,
-        advancePaid: paymentMethod === 'cod' ? (settings?.codDeliveryAmount || 60) : summary.total
+        advancePaid: isCod ? codAmount : summary.total
       };
 
       const response = await fetch(`${API_BASE_URL}/api/orders`, {
@@ -153,13 +153,19 @@ function CheckoutContent() {
 
       const orderData = await orderRes.json();
 
+      let rpMethod = undefined;
+      if (paymentMethod === 'upi') rpMethod = 'upi';
+      if (paymentMethod === 'cards') rpMethod = 'card';
+      if (paymentMethod === 'wallets') rpMethod = 'wallet';
+      if (paymentMethod === 'netbanking') rpMethod = 'netbanking';
+
       // Real Razorpay Integration
       const options = {
         key: key,
         amount: orderData.amount,
         currency: orderData.currency,
         name: "6YARD",
-        description: paymentMethod === 'cod' ? "Advance Payment for COD" : "Order Payment",
+        description: isCod ? "Advance Payment for COD" : "Order Payment",
         image: "/logo.png",
         order_id: orderData.id,
         handler: function (response: any) {
@@ -171,7 +177,8 @@ function CheckoutContent() {
         },
         prefill: {
           name: address.name,
-          contact: address.phone
+          contact: address.phone,
+          method: rpMethod
         },
         theme: { color: "#000000" }, // Black theme as requested
         modal: {
@@ -202,166 +209,138 @@ function CheckoutContent() {
       </>
 
       <main className="max-w-[1280px] mx-auto px-6">
-        <div className="flex items-center gap-4 mb-8">
-          <button onClick={() => navigate.back()} className="p-2 hover:bg-brand-surface-normal rounded-full transition-colors">
-            <ArrowLeft size={24} />
-          </button>
-          <h1 className="font-h text-[32px] font-bold text-brand-on-surface uppercase italic">Secure Checkout</h1>
+        {/* Breadcrumbs */}
+        <nav className="flex items-center space-x-2 text-[10px] font-sans text-brand-on-surface-variant mb-4 uppercase tracking-widest max-w-3xl mx-auto">
+          <Link className="hover:text-brand-primary transition-colors" href="/">Home</Link>
+          <ChevronRight size={14} />
+          <Link className="hover:text-brand-primary transition-colors" href="/cart">Cart</Link>
+          <ChevronRight size={14} />
+          <span className="text-brand-on-surface font-black">Checkout</span>
+        </nav>
+
+        <div className="max-w-3xl mx-auto flex items-center justify-between pb-4 mb-4">
+          <h1 className="font-h text-2xl md:text-3xl font-bold text-brand-on-surface leading-[1.3] uppercase">Secure Checkout</h1>
+          <span className="font-sans text-[10px] text-brand-on-surface-variant uppercase tracking-[0.2em] font-bold bg-brand-surface-low px-4 py-2 rounded-full">
+            {cartItems.reduce((acc: any, item: any) => acc + item.quantity, 0)} ITEMS
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-8 space-y-10">
-
-            {/* Step 1: Delivery Address (Confirmed) */}
-            <section className="bg-white p-8 rounded-3xl border border-brand-surface-normal shadow-sm">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="font-h text-2xl font-bold flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm">
-                    <CheckCircle2 size={16} />
-                  </span>
-                  Shipping Address
-                </h2>
-                <button onClick={() => navigate.push('/cart?changeAddress=true')} className="text-brand-primary font-bold text-xs uppercase tracking-widest hover:underline">
-                  Change
-                </button>
-              </div>
-
-              <div className="bg-brand-surface-low rounded-2xl p-6 border border-brand-surface-normal flex gap-4">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-brand-on-surface-variant shadow-sm flex-shrink-0">
-                  <MapPin size={24} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-brand-on-surface">{address.name}</h3>
-                  </div>
-                  <p className="font-sans text-sm text-brand-on-surface-variant leading-relaxed">
-                    {address.address}, {address.locality}<br />
-                    {address.city} - <span className="font-bold">{address.pincode}</span>
-                  </p>
-                  <p className="font-sans text-sm font-bold text-brand-on-surface mt-2">
-                    {address.phone} {address.alternatePhone && ` / ${address.alternatePhone}`}
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Step 2: Payment Method */}
-            <section className="bg-white p-8 rounded-3xl border border-brand-surface-normal shadow-sm">
-              <h2 className="font-h text-2xl font-bold mb-8 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center text-sm">2</span>
-                Payment Method
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { id: 'online', name: 'Online Payment', icon: QrCode, subtitle: 'Pay via UPI, QR Code, Cards, Netbanking' },
-                  { id: 'cod', name: 'Cash on Delivery', icon: Truck, subtitle: `Requires ₹${settings?.codDeliveryAmount || 60} Advance` },
-                ].map((method) => (
-                  <div
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={cn(
-                      "p-5 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-4",
-                      paymentMethod === method.id ? "border-brand-primary bg-brand-primary/5" : "border-brand-surface-normal hover:border-brand-primary/30"
-                    )}
-                  >
-                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5", paymentMethod === method.id ? "border-brand-primary" : "border-brand-surface-dim")}>
-                      {paymentMethod === method.id && <div className="w-2.5 h-2.5 rounded-full bg-brand-primary" />}
-                    </div>
-                    <div>
-                      <span className="font-sans font-bold text-brand-on-surface block mb-1 flex items-center gap-2">
-                        {method.id === 'online' && <QrCode size={16} className="text-brand-primary" />}
-                        {method.name}
-                      </span>
-                      <span className="font-sans text-xs text-brand-on-surface-variant">{method.subtitle}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <AnimatePresence>
-                {paymentMethod === 'cod' && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="mt-6 bg-brand-surface-low border border-brand-surface-normal p-5 rounded-2xl flex items-start gap-3"
-                  >
-                    <ShieldCheck className="text-brand-primary shrink-0" size={20} />
-                    <div>
-                      <p className="font-sans text-sm text-brand-on-surface-variant leading-relaxed">
-                        To confirm your COD order and prevent fake orders, an advance payment of <strong className="text-brand-on-surface">₹{settings?.codDeliveryAmount || 60}</strong> is required.
-                        The remaining amount will be collected at the time of delivery.
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </section>
-          </div>
-
-          <aside className="lg:col-span-4 lg:sticky lg:top-32 h-fit space-y-8">
-            <section className="bg-white p-8 rounded-3xl border border-brand-surface-normal shadow-lg shadow-brand-primary/5">
-              <h4 className="font-h font-bold text-xl text-brand-on-surface mb-8">Order Summary</h4>
-
-              <div className="space-y-6 mb-8">
-                {cartItems.map((item: any) => (
-                  <div key={item._id} className="flex items-center gap-4">
-                    <div className="w-16 h-20 bg-brand-surface-low rounded-xl overflow-hidden flex-shrink-0">
-                      <img src={item.product?.images?.[0]} alt={item.product?.name} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="min-w-0 flex-grow">
-                      <h5 className="font-h font-bold text-brand-on-surface text-sm line-clamp-1">{item.product?.name}</h5>
-                      <p className="font-sans text-[10px] text-brand-on-surface-variant mt-1 uppercase tracking-widest font-bold">Size: {item.size} • Qty: {item.quantity}</p>
-                      <p className="font-h font-bold text-brand-primary mt-1">₹{((item.product?.discount_price || item.product?.price || 0) * item.quantity).toFixed(2)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-4 font-sans text-sm border-t border-brand-surface-normal pt-6">
-                <div className="flex justify-between items-center text-brand-on-surface-variant">
-                  <span>Subtotal</span>
-                  <span className="font-bold text-brand-on-surface">₹{summary.subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-brand-on-surface-variant">
-                  <span>Shipping</span>
-                  <span className={cn("font-bold uppercase tracking-widest text-xs", dynamicShippingCost === 0 ? "text-green-600" : "text-brand-on-surface")}>
-                    {dynamicShippingCost === 0 ? 'FREE' : `₹${dynamicShippingCost.toFixed(2)}`}
-                  </span>
-                </div>
-                <div className="h-px bg-brand-surface-normal my-2" />
-                <div className="flex justify-between items-center pt-2">
-                  <span className="font-h text-lg font-bold text-brand-on-surface">Total</span>
-                  <span className="font-h text-2xl font-black text-brand-primary">₹{dynamicTotal.toFixed(2)}</span>
-                </div>
-              </div>
-
-              <button
-                disabled={isProcessing}
-                onClick={handlePayNow}
-                className="w-full mt-10 bg-brand-primary text-white py-4 rounded-2xl font-sans font-bold text-xs uppercase tracking-[0.2em] hover:bg-brand-primary-hover active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-2xl shadow-brand-primary/40 cursor-pointer disabled:opacity-50"
-              >
-                {isProcessing ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <ShieldCheck size={20} />
-                )}
-                {isProcessing ? 'Processing...' : `Pay ₹${payableAmount.toFixed(2)}`}
+        <div className="max-w-3xl mx-auto space-y-2 sm:space-y-4 pb-28 -mx-6 sm:mx-auto">
+          {/* Step 1: Delivery Address */}
+          <section className="bg-white p-4 md:p-6 sm:rounded-2xl sm:border border-brand-surface-normal sm:shadow-sm">
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="font-sans text-brand-on-surface-variant text-sm font-bold">Deliver to:</h2>
+              <button onClick={() => navigate.push('/cart?changeAddress=true')} className="text-brand-primary font-bold text-[11px] border border-brand-surface-normal rounded px-3 py-1.5 hover:bg-brand-surface-low transition-colors">
+                Change
               </button>
-            </section>
+            </div>
 
-            <div className="bg-brand-surface-low p-6 rounded-2xl border border-brand-surface-normal flex flex-col items-center gap-3">
-              <div className="flex gap-4 text-brand-on-surface-variant opacity-40">
-                <ShieldCheck size={20} />
-                <Truck size={20} />
-                <CreditCard size={20} />
-              </div>
-              <p className="font-sans text-[10px] uppercase tracking-[0.15em] font-black text-brand-on-surface-variant/60 text-center">
-                Secure SSL Encrypted Checkout
+            <div className="flex flex-col">
+              <h3 className="font-bold text-brand-on-surface text-[15px] mb-1">{address.name}</h3>
+              <p className="font-sans text-sm text-brand-on-surface-variant leading-relaxed">
+                {address.address}, {address.locality}, {address.city}, {address.state} - <span className="font-bold text-brand-on-surface">{address.pincode}</span>
+              </p>
+              <p className="font-sans text-sm text-brand-on-surface mt-2">
+                {address.phone} {address.alternatePhone && `, ${address.alternatePhone}`}
               </p>
             </div>
-          </aside>
+          </section>
+
+          {/* Step 2: Order Items */}
+          <section className="bg-white p-4 md:p-6 sm:rounded-2xl sm:border border-brand-surface-normal sm:shadow-sm">
+            <div className="space-y-6">
+              {cartItems.map((item: any, idx: number) => (
+                <div key={item._id} className={cn("flex gap-4", idx !== 0 && "pt-6 border-t border-brand-surface-normal")}>
+                  <div className="w-20 h-24 bg-brand-surface-low rounded-md overflow-hidden flex-shrink-0 border border-brand-surface-normal/50">
+                    <img src={item.product?.images?.[0]} alt={item.product?.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-grow">
+                    <h5 className="font-sans text-brand-on-surface text-[13px] line-clamp-2 leading-snug">{item.product?.name}</h5>
+
+                    <div className="mt-2 flex items-center gap-2">
+                      {item.product?.discount_price && item.product.discount_price < item.product.price && (
+                        <span className="text-[11px] text-green-600 font-bold bg-green-50 px-1 py-0.5 rounded">
+                          ↓{Math.round(((item.product.price - item.product.discount_price) / item.product.price) * 100)}%
+                        </span>
+                      )}
+                      {item.product?.discount_price && item.product.discount_price < item.product.price && (
+                        <span className="text-[11px] text-brand-on-surface-variant line-through">₹{(item.product.price * item.quantity).toFixed(0)}</span>
+                      )}
+                      <span className="font-bold text-brand-on-surface text-base">₹{((item.product?.discount_price || item.product?.price || 0) * item.quantity).toFixed(0)}</span>
+                      {item.quantity > 1 && (
+                        <span className="text-[11px] text-brand-on-surface-variant ml-1">(₹{(item.product?.discount_price || item.product?.price || 0).toFixed(0)} each)</span>
+                      )}
+                    </div>
+                    <div className="mt-2">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-brand-surface-low border border-brand-surface-normal rounded text-[11px] font-bold text-brand-on-surface">
+                        Qty: {item.quantity} • {item.size}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Step 3: Payment Method */}
+          <section className="bg-white py-4 md:p-6 sm:rounded-2xl sm:border border-brand-surface-normal sm:shadow-sm">
+            <h2 className="font-sans text-brand-on-surface-variant text-sm font-bold mb-4 px-4 md:px-0">Payment Methods</h2>
+
+            <div className="border-y sm:border border-brand-surface-normal sm:rounded-xl overflow-hidden bg-white">
+              {[
+                { id: 'cod', amount: codAmount, title: `COD Partial Payment (Pay ₹${summary.total.toFixed(0)} on delivery)` },
+                { id: 'upi', amount: summary.subtotal, title: 'Pay via UPI' },
+                { id: 'cards', amount: summary.subtotal, title: 'Pay via Debit/Credit cards' },
+                { id: 'wallets', amount: summary.subtotal, title: 'Pay via Wallets' },
+                { id: 'netbanking', amount: summary.subtotal, title: 'Pay via NetBanking' },
+              ].map((method, index) => (
+                <div
+                  key={method.id}
+                  onClick={() => setPaymentMethod(method.id)}
+                  className={cn(
+                    "py-4 px-1 sm:px-2 cursor-pointer transition-all flex items-center justify-between relative bg-white hover:bg-brand-surface-low",
+                    index !== 0 && "border-t border-brand-surface-normal"
+                  )}
+                >
+                  <div className="flex items-center gap-3 z-10">
+                    <div className={cn("w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center shrink-0", paymentMethod === method.id ? "border-brand-primary" : "border-brand-on-surface-variant/40")}>
+                      {paymentMethod === method.id && <div className="w-2 h-2 rounded-full bg-brand-primary" />}
+                    </div>
+                    <div>
+                      <div className="font-bold text-[15px] text-brand-on-surface leading-none">₹{method.amount.toFixed(2)}</div>
+                      <div className="font-sans text-[11px] text-brand-on-surface-variant mt-1">{method.title}</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center z-10">
+                    {method.id === 'cod' && <Truck size={28} className="opacity-50" />}
+                    {method.id === 'upi' && <img src="/upi-removebg-preview.png" alt="UPI" className="h-10 w-auto object-contain" />}
+                    {method.id === 'cards' && <img src="/card.pngg-removebg-preview.png" alt="Cards" className="h-10 w-auto object-contain" />}
+                    {method.id === 'wallets' && <img src="/wallet-removebg-preview.png" alt="Wallets" className="h-10 w-auto object-contain translate-x-3" />}
+                    {method.id === 'netbanking' && <img src="/netbanking-removebg-preview.png" alt="NetBanking" className="h-10 w-auto object-contain" />}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Secure Badges */}
+          <div className="flex items-center justify-center gap-3 py-4 text-brand-on-surface-variant opacity-40">
+            <ShieldCheck size={14} />
+            <span className="font-sans text-[8px] uppercase tracking-widest font-bold">Secure SSL Checkout</span>
+          </div>
+
+          <button
+            disabled={isProcessing}
+            onClick={handlePayNow}
+            className="w-full mt-6 bg-black text-white py-4 rounded-2xl font-sans font-bold text-sm uppercase tracking-[0.2em] hover:bg-black/90 active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-2xl shadow-black/20 cursor-pointer disabled:opacity-50"
+          >
+            {isProcessing ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <ShieldCheck size={20} />
+            )}
+            {isProcessing ? 'Processing...' : `Pay ₹${payableAmount.toFixed(0)}`}
+          </button>
         </div>
       </main>
 

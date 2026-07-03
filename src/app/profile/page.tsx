@@ -83,13 +83,13 @@ export default function Profile() {
     <div className="min-h-screen bg-brand-surface pt-24 pb-40">
       <main className="max-w-2xl mx-auto px-6">
         {/* Profile Card */}
-        <section className="bg-white rounded-[40px] p-10 shadow-2xl shadow-brand-primary/10 border border-brand-surface-normal mb-10 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-brand-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-1000" />
+        <section className="bg-white rounded-3xl p-6 md:p-8 border border-brand-surface-normal mb-8 relative overflow-hidden group shadow-sm hover:shadow-md transition-shadow">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-1000" />
 
           <div className="flex flex-col items-center text-center relative z-10">
             {/* Profile Image removed as per "venda" request */}
-            <div className="w-24 h-24 bg-brand-primary/10 rounded-full flex items-center justify-center mb-6 text-brand-primary">
-              <UserIcon size={48} />
+            <div className="w-20 h-20 bg-brand-surface-low rounded-full flex items-center justify-center mb-5 text-brand-primary border border-brand-surface-normal">
+              <UserIcon size={32} />
             </div>
 
             {isEditingName ? (
@@ -110,7 +110,7 @@ export default function Profile() {
             ) : (
               <>
                 <div className="flex items-center gap-3">
-                  <h2 className="font-h text-3xl font-black text-brand-on-surface mb-1">
+                  <h2 className="font-h text-2xl md:text-3xl font-black text-brand-on-surface mb-1">
                     {user?.name || 'Set Name'}
                   </h2>
                   <button onClick={() => setIsEditingName(true)} className="p-1.5 hover:bg-brand-surface-low rounded-lg transition-colors text-brand-primary">
@@ -126,21 +126,21 @@ export default function Profile() {
         </section>
 
         {/* Menu Items */}
-        <section className="bg-white rounded-[32px] overflow-hidden shadow-xl border border-brand-surface-normal">
+        <section className="bg-white rounded-3xl overflow-hidden shadow-sm border border-brand-surface-normal">
           <div className="divide-y divide-brand-surface-normal">
             {menuItems.map((item, idx) => (
               <Link
                 key={item.label}
                 href={item.path}
-                className="flex items-center justify-between p-6 hover:bg-brand-surface-low transition-all group"
+                className="flex items-center justify-between p-4 md:p-5 hover:bg-brand-surface-low transition-all group"
               >
-                <div className="flex items-center gap-5">
-                  <div className={cn("w-12 h-12 rounded-2xl bg-brand-surface-low flex items-center justify-center transition-all group-hover:scale-110 font-bold", item.color)}>
-                    <item.icon size={22} />
+                <div className="flex items-center gap-4">
+                  <div className={cn("w-10 h-10 rounded-xl bg-brand-surface-lowest border border-brand-surface-normal flex items-center justify-center transition-all group-hover:scale-110 font-bold", item.color)}>
+                    <item.icon size={18} />
                   </div>
-                  <span className="font-h text-lg font-bold text-brand-on-surface">{item.label}</span>
+                  <span className="font-h text-base font-bold text-brand-on-surface">{item.label}</span>
                 </div>
-                <ChevronRight size={20} className="text-brand-on-surface-variant opacity-40 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight size={18} className="text-brand-on-surface-variant opacity-40 group-hover:translate-x-1 transition-transform" />
               </Link>
             ))}
           </div>
@@ -148,9 +148,9 @@ export default function Profile() {
 
         <button
           onClick={handleLogout}
-          className="w-full mt-10 p-6 flex items-center justify-center gap-3 bg-red-50 text-red-600 rounded-3xl font-h font-bold hover:bg-red-100 transition-all border border-red-100 active:scale-95"
+          className="w-full mt-6 p-4 flex items-center justify-center gap-2 bg-white text-red-500 rounded-2xl font-h font-bold hover:bg-red-50 transition-all border border-brand-surface-normal active:scale-95 text-sm shadow-sm"
         >
-          <LogOut size={22} />
+          <LogOut size={18} />
           Sign Out
         </button>
       </main>

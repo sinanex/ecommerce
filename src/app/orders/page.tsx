@@ -167,9 +167,11 @@ export default function Orders() {
               const itemsCount = order.items?.length || 0;
               const dateObj = new Date(order.createdAt);
               const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+              const originalIdx = orders.findIndex(o => o._id === order._id);
+              const orderNum = String(orders.length - originalIdx).padStart(4, '0');
 
               return (
-                <motion.div
+                <motion.section
                   key={order._id}
                   className="group bg-white rounded-[32px] p-6 md:p-8 shadow-xl shadow-brand-primary/5 border border-brand-surface-normal hover:border-brand-primary/20 hover:shadow-brand-primary/10 transition-all cursor-pointer"
                   initial={{ opacity: 0, y: 15 }}
@@ -185,7 +187,7 @@ export default function Orders() {
                       </div>
                       <div className="sm:text-right">
                         <span className="block text-[10px] font-sans font-black text-brand-on-surface-variant opacity-60 uppercase tracking-widest mb-1">Order ID</span>
-                        <span className="font-sans text-sm font-bold text-brand-primary tracking-wider">#{order._id.slice(-8).toUpperCase()}</span>
+                        <span className="font-sans text-sm font-bold text-brand-primary tracking-wider">#{orderNum}</span>
                       </div>
                     </div>
 
@@ -195,7 +197,7 @@ export default function Orders() {
                         {mainItem.image ? (
                           <img className="w-full h-full object-cover" src={mainItem.image} alt={mainItem.name} />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs text-brand-on-surface-variant">No Image</div>
+                          <div className="w-full h-full flex items-center justify-center text-[10px] text-brand-on-surface-variant">No Image</div>
                         )}
                       </div>
                       <div className="flex-grow min-w-0">
@@ -235,7 +237,7 @@ export default function Orders() {
                       </div>
                     </div>
                   </Link>
-                </motion.div>
+                </motion.section>
               );
             })}
           </div>

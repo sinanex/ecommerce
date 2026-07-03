@@ -238,10 +238,10 @@ export default function Cart() {
           <span className="text-brand-on-surface font-black">Cart</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left: Cart Items */}
-          <div className="lg:col-span-8 space-y-8">
-            <div className="flex items-center justify-between pb-4">
+          <div className="lg:col-span-8 space-y-6">
+            <div className="flex items-center justify-between pb-2">
               <h2 className="font-h text-2xl md:text-3xl font-bold text-brand-on-surface leading-[1.3] uppercase">Shopping Cart</h2>
               <span className="font-sans text-[10px] text-brand-on-surface-variant uppercase tracking-[0.2em] font-bold bg-brand-surface-low px-4 py-2 rounded-full">
                 {cartItems.reduce((acc, item) => acc + item.quantity, 0)} ITEMS
@@ -251,98 +251,76 @@ export default function Cart() {
 
 
             {/* Cart Items List */}
-            <div className="space-y-4">
-              {cartItems.map((item) => (
-                <motion.div
-                  key={item._id}
-                  className="bg-white rounded-3xl border border-brand-surface-normal p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                >
-                  <div className="flex flex-col md:flex-row gap-6">
-                    {/* Product Image */}
-                    <Link href={`/product/${item.product?._id}`} className="w-full md:w-40 aspect-[3/4] bg-brand-surface-low rounded-2xl overflow-hidden flex-shrink-0 group">
-                      <img
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        src={item.product?.images?.[0] || 'https://via.placeholder.com/400'}
-                        alt={item.product?.name}
-                      />
-                    </Link>
-
-                    {/* Product Info */}
-                    <div className="flex flex-col justify-between flex-grow py-1 min-w-0">
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-start gap-4">
-                          <div className="min-w-0">
-                            <h3 className="font-h text-lg text-brand-on-surface leading-tight font-bold truncate">{item.product?.name}</h3>
-                            <div className="flex items-center gap-3 mt-2">
-                              {item.size && (
-                                <span className="font-sans text-[11px] font-bold text-brand-on-surface-variant bg-brand-surface-low px-3 py-1 rounded-lg uppercase tracking-wider">
-                                  Size: {item.size}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <p className="font-sans text-xs text-green-600 font-bold flex items-center gap-1.5">
-                          <ShieldCheck size={14} /> In Stock
-                        </p>
+            <div className="bg-white p-4 md:p-6 sm:rounded-2xl sm:border border-brand-surface-normal sm:shadow-sm">
+              {cartItems.map((item, idx) => (
+                <div key={item._id} className={`flex gap-4 ${idx !== 0 ? "pt-5 mt-5 border-t border-brand-surface-normal" : ""}`}>
+                  <div className="w-20 h-24 bg-brand-surface-low rounded-md overflow-hidden flex-shrink-0 border border-brand-surface-normal/50">
+                    <img src={item.product?.images?.[0] || 'https://via.placeholder.com/400'} alt={item.product?.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-grow flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-start gap-2">
+                        <Link href={`/product/${item.product?._id}`} className="hover:underline line-clamp-2">
+                          <h5 className="font-sans text-brand-on-surface text-[13px] leading-snug">{item.product?.name}</h5>
+                        </Link>
+                        <button
+                          onClick={() => handleRemoveItem(item._id)}
+                          className="text-brand-on-surface-variant hover:text-red-500 p-1 flex-shrink-0 transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
 
-                      <div className="flex justify-between items-end mt-6">
-                        {/* Quantity Stepper */}
-                        <div className="flex items-center gap-1 bg-brand-surface-low rounded-xl p-1">
-                          <button
-                            onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                            className="w-10 h-10 flex items-center justify-center text-brand-on-surface rounded-lg hover:bg-white active:scale-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                          >
-                            <Minus size={16} />
-                          </button>
-                          <span className="w-10 text-center font-h font-bold text-lg text-brand-on-surface select-none">
-                            {item.quantity}
+                      <div className="mt-1 flex items-center gap-2">
+                        {item.product?.discount_price && item.product.discount_price < item.product.price && (
+                          <span className="text-[11px] text-green-600 font-bold bg-green-50 px-1 py-0.5 rounded">
+                            ↓{Math.round(((item.product.price - item.product.discount_price) / item.product.price) * 100)}%
                           </span>
-                          <button
-                            onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)}
-                            disabled={item.quantity >= 10}
-                            className="w-10 h-10 flex items-center justify-center text-brand-on-surface rounded-lg hover:bg-white active:scale-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                          >
-                            <Plus size={16} />
-                          </button>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <button
-                            onClick={() => handleRemoveItem(item._id)}
-                            className="text-brand-on-surface-variant hover:text-red-500 hover:bg-red-50 p-2.5 rounded-xl transition-all flex items-center gap-2 text-sm font-medium cursor-pointer active:scale-90"
-                          >
-                            <Trash2 size={18} />
-                            <span className="hidden sm:inline">Remove</span>
-                          </button>
-
-                          <div className="text-right">
-                            <p className="font-h text-xl text-brand-on-surface font-black">
-                              ₹{((item.product?.discount_price || item.product?.price || 0) * item.quantity).toFixed(2)}
-                            </p>
-                            {item.quantity > 1 && (
-                              <p className="font-sans text-[11px] text-brand-on-surface-variant mt-0.5">
-                                ₹{(item.product?.discount_price || item.product?.price || 0).toFixed(2)} each
-                              </p>
-                            )}
-                          </div>
-                        </div>
+                        )}
+                        {item.product?.discount_price && item.product.discount_price < item.product.price && (
+                          <span className="text-[11px] text-brand-on-surface-variant line-through">₹{item.product.price.toFixed(0)}</span>
+                        )}
+                        <span className="font-bold text-brand-on-surface text-base">₹{(item.product?.discount_price || item.product?.price || 0).toFixed(0)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-2 flex items-center gap-3">
+                      {item.size && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-brand-surface-low border border-brand-surface-normal rounded text-[11px] font-bold text-brand-on-surface">
+                          Size: {item.size}
+                        </span>
+                      )}
+                      {/* Quantity Stepper */}
+                      <div className="flex items-center gap-1 bg-brand-surface-low border border-brand-surface-normal rounded px-1.5 py-0.5">
+                        <button
+                          onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                          className="text-brand-on-surface hover:text-brand-primary disabled:opacity-30 p-1 cursor-pointer"
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span className="text-[11px] font-bold w-4 text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)}
+                          disabled={item.quantity >= 10}
+                          className="text-brand-on-surface hover:text-brand-primary disabled:opacity-30 p-1 cursor-pointer"
+                        >
+                          <Plus size={12} />
+                        </button>
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
 
           {/* Right: Order Summary */}
-          <aside className="lg:col-span-4 lg:sticky lg:top-32 h-fit space-y-6">
+          <aside className="lg:col-span-4 lg:sticky lg:top-32 h-fit space-y-4">
             <motion.section
-              className="bg-white p-8 rounded-3xl border border-brand-surface-normal shadow-lg shadow-brand-primary/5"
+              className="bg-white p-6 rounded-3xl border border-brand-surface-normal shadow-lg shadow-brand-primary/5"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -448,7 +426,7 @@ export default function Cart() {
       {/* Address Selection Overlay */}
       <AnimatePresence>
         {showAddressOverlay && (
-          <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center px-0 md:px-6">
+          <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center px-0 md:px-6 bg-white md:bg-transparent">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -457,11 +435,11 @@ export default function Cart() {
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative bg-white w-full max-w-2xl rounded-t-[32px] md:rounded-[32px] overflow-hidden shadow-2xl h-[85vh] md:h-auto md:max-h-[80vh] flex flex-col"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="relative bg-white w-full h-[100dvh] md:h-auto md:max-h-[90vh] md:max-w-2xl md:rounded-[32px] overflow-hidden shadow-none md:shadow-2xl flex flex-col"
             >
               <div className="p-8 border-b border-brand-surface-normal flex justify-between items-center bg-white sticky top-0 z-10">
                 <h2 className="font-h text-2xl font-bold">Delivery Address</h2>

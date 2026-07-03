@@ -484,7 +484,7 @@ export default function ProductDetail() {
   };
 
   return (
-    <main className="max-w-[1280px] mx-auto px-6 pt-20 pb-12">
+    <main className="max-w-[1280px] mx-auto px-6 pt-25 pb-12">
       <>
         <title>{`6YARD | ${product.name}`}</title>
         <meta name="description" content={product.description || `Get your hands on the premium ${product.name} from 6YARD. High performance athletic gear, premium sizes, and custom prints available.`} />

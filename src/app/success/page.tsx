@@ -40,7 +40,7 @@ export default function Success() {
 
           <div className="bg-white border border-brand-surface-normal rounded-2xl p-8 w-full shadow-sm text-left mb-10">
             <h3 className="font-h text-xl font-bold mb-6 border-b border-brand-surface-normal pb-4">Order Details</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <p className="font-sans text-xs font-bold uppercase tracking-widest text-brand-on-surface-variant mb-1">Order ID</p>
@@ -60,8 +60,8 @@ export default function Success() {
               <div>
                 <p className="font-sans text-xs font-bold uppercase tracking-widest text-brand-on-surface-variant mb-1">Shipping Address</p>
                 <p className="font-sans text-base font-medium">
-                  {order.shippingAddress?.name}<br/>
-                  {order.shippingAddress?.address}, {order.shippingAddress?.locality}<br/>
+                  {order.shippingAddress?.name}<br />
+                  {order.shippingAddress?.address}, {order.shippingAddress?.locality}<br />
                   {order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}
                 </p>
               </div>

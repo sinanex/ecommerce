@@ -44,7 +44,7 @@ export default function Orders() {
     const query = searchQuery.toLowerCase();
     return orders.filter(order => {
       const orderIdMatches = order._id?.toLowerCase().includes(query);
-      const itemsMatch = order.items?.some((item: any) => 
+      const itemsMatch = order.items?.some((item: any) =>
         item.name?.toLowerCase().includes(query)
       );
       return orderIdMatches || itemsMatch;
@@ -139,7 +139,7 @@ export default function Orders() {
             </div>
             <h2 className="font-h text-xl font-bold text-brand-on-surface mb-2">No orders found</h2>
             <p className="font-sans text-brand-on-surface-variant opacity-70 text-sm mb-8">Looks like you haven't placed any orders yet.</p>
-            <Link 
+            <Link
               href="/"
               className="inline-flex items-center justify-center bg-brand-primary hover:bg-brand-primary-hover text-white px-8 py-4 rounded-xl font-sans font-bold hover:scale-[1.02] active:scale-95 transition-all text-xs uppercase tracking-widest shadow-lg shadow-brand-primary/10 cursor-pointer"
             >
@@ -153,7 +153,7 @@ export default function Orders() {
             </div>
             <h2 className="font-h text-lg font-bold text-brand-on-surface mb-2">No matches found</h2>
             <p className="font-sans text-brand-on-surface-variant opacity-70 text-sm mb-6">We couldn't find any orders matching "{searchQuery}".</p>
-            <button 
+            <button
               onClick={() => setSearchQuery('')}
               className="bg-brand-surface-low text-brand-on-surface border border-brand-surface-normal px-6 py-3 rounded-xl font-sans font-bold hover:bg-brand-surface-high active:scale-95 transition-all text-xs uppercase tracking-widest cursor-pointer"
             >

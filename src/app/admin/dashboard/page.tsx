@@ -35,6 +35,7 @@ import { API_BASE_URL } from '@/config';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { printInvoice } from '@/lib/printUtils';
 
 // Premium Searchable Dropdown Component
 const SearchableDropdown = ({
@@ -887,6 +888,9 @@ const AdminDashboard = () => {
 
 
   const renderContent = () => {
+    const sortedOrders = [...orders].sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    const orderNumberMap = new Map(sortedOrders.map((o, idx) => [o._id, (idx + 1).toString().padStart(4, '0')]));
+
     switch (activeTab) {
       case 'dashboard': {
         // --- Derived Analytics ---
@@ -1758,7 +1762,7 @@ const AdminDashboard = () => {
                     >
                       <td className="px-6 py-6">
                         <div className="flex flex-col gap-1">
-                          <span className="font-mono text-sm font-bold text-brand-primary">#{order._id.substring(order._id.length - 8)}</span>
+                          <span className="font-mono text-sm font-bold text-brand-primary">#{orderNumberMap.get(order._id)}</span>
                           <span className="text-xs font-sans font-bold text-brand-on-surface-variant opacity-60">{new Date(order.createdAt).toLocaleString()}</span>
                         </div>
                       </td>
@@ -1864,169 +1868,9 @@ const AdminDashboard = () => {
           );
         }
 
-        const numberToWords = (num: number) => {
-          const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
-          const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-          const strNum = Math.floor(num).toString();
-          if (strNum.length > 9) return 'overflow';
-          let n: any = ('000000000' + strNum).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-          if (!n) return '';
-          let str = '';
-          str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
-          str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
-          str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
-          str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
-          str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'Rupees Only' : 'Rupees Only';
-          return str;
-        };
+        const orderNumber = orderNumberMap.get(order._id) || '0000';
 
-        const handlePrintInvoice = () => {
-          const iframe = document.createElement('iframe');
-          iframe.style.position = 'absolute';
-          iframe.style.width = '0px';
-          iframe.style.height = '0px';
-          iframe.style.border = 'none';
-          document.body.appendChild(iframe);
-
-          const orderIdStr = order._id.substring(order._id.length - 8);
-          const paymentType = order.paymentMethod === 'cod' ? 'COD' : 'Prepaid';
-
-          const invoiceHtml = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-            <meta charset="UTF-8">
-            <title>Invoice</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #000; font-size: 12px; }
-              .invoice-container { width: 100%; max-width: 800px; margin: 0 auto; }
-              .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-              .logo { max-width: 150px; max-height: 50px; }
-              .company-info { font-size: 11px; line-height: 1.4; text-align: left; flex: 1; margin-left: 20px; }
-              .invoice-details { text-align: right; font-size: 12px; }
-              .details-row { display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #000; padding-bottom: 15px; }
-              .order-info { width: 45%; line-height: 1.6; }
-              .shipping-info { width: 45%; line-height: 1.4; }
-              .info-title { font-weight: bold; margin-bottom: 5px; font-size: 13px; }
-              .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-              .items-table th { border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 5px; text-align: left; font-weight: bold; }
-              .items-table td { padding: 10px 5px; vertical-align: top; }
-              .items-table th.right, .items-table td.right { text-align: right; }
-              .totals { display: flex; justify-content: flex-end; margin-top: 10px; border-top: 1px solid #ccc; padding-top: 10px; }
-              .totals-table { width: 300px; border-collapse: collapse; }
-              .totals-table td { padding: 5px; font-size: 14px; }
-              .totals-table td.right { text-align: right; }
-              .grand-total { border-top: 2px solid #000; border-bottom: 2px solid #000; font-weight: bold; font-size: 16px; }
-              .grand-total td { padding: 10px 5px; }
-              .footer { margin-top: 40px; font-size: 10px; line-height: 1.4; color: #555; border-top: 1pxpinn dashed #ccc; padding-top: 10px; text-align: center; }
-              @media print {
-                body { padding: 0; }
-              }
-            </style>
-            </head>
-            <body>
-            <div class="invoice-container">
-              <div class="header">
-                <img src="${window.location.origin}/logo.png" class="logo" alt="6YARD Logo" onerror="this.style.display='none'" />
-                <div class="company-info">
-                  <strong>Seller: 6YARD</strong><br>
-                  Manjerithodi House, Mongam, kerala, 673642<br>
-                  Mongam, Kerala, India, 673642
-                </div>
-                <div class="invoice-details">
-                  <strong>Order #</strong> ${orderIdStr}<br>
-                  <strong>Payment:</strong> ${paymentType}
-                </div>
-              </div>
-              <div class="details-row">
-                <div class="order-info">
-                  <div class="info-title">Order ID:</div>
-                  <div>${order._id}</div>
-                  <div class="info-title" style="margin-top:10px;">Order Date:</div>
-                  <div>${new Date(order.createdAt).toLocaleDateString()}</div>
-                </div>
-                <div class="shipping-info">
-                  <div class="info-title">Shipping Address</div>
-                  <b>${order.shippingAddress?.name || 'Customer'}</b><br>
-                  ${order.shippingAddress?.address || ''}<br>
-                  ${order.shippingAddress?.locality || ''}<br>
-                  ${order.shippingAddress?.city || ''}, ${order.shippingAddress?.state || ''}<br>
-                  PIN - ${order.shippingAddress?.pincode || ''}<br>
-                  Phone: ${order.shippingAddress?.phone || order.user?.phone || ''}
-                </div>
-              </div>
-              <table class="items-table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th style="width: 40%">Title</th>
-                    <th class="right">Qty</th>
-                    <th class="right">Price (₹)</th>
-                    <th class="right">Total (₹)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${order.items.map((item: any) => `
-                    <tr>
-                      <td>Item</td>
-                      <td><b>${item.name}</b><br><span style="font-size:10px;color:#555;">Size: ${item.size}</span></td>
-                      <td class="right">${item.quantity}</td>
-                      <td class="right">${item.price.toFixed(2)}</td>
-                      <td class="right">${(item.price * item.quantity).toFixed(2)}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-              <div class="totals">
-                <table class="totals-table">
-                  <tr>
-                    <td>Total</td>
-                    <td class="right">${order.totalAmount.toFixed(2)}</td>
-                  </tr>
-                  <tr class="grand-total">
-                    <td>Grand Total</td>
-                    <td class="right">₹ ${order.totalAmount.toFixed(2)}</td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" style="font-size:10px;text-align:right;border:none;">
-                      <i>${numberToWords(order.totalAmount)}</i>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div class="footer">
-                <b>Return Address:</b> Afnan pk 6 yard, metro square manjeri opposite Ksfe manjeri 676121 8590394491 , Manjeri, Kerala, India, 676121
-              </div>
-            </div>
-            <script>
-              window.onload = function() {
-                setTimeout(function() {
-                  window.focus();
-                  window.print();
-                }, 500);
-              };
-            </script>
-            </body>
-            </html>
-          `;
-
-          const doc = iframe.contentWindow?.document;
-          if (doc) {
-            doc.open();
-            doc.write(invoiceHtml);
-            doc.close();
-          }
-
-          setTimeout(() => {
-            if (document.body.contains(iframe)) {
-              document.body.removeChild(iframe);
-            }
-          }, 10000);
-        };
-
-        const handlePrintCODLabel = () => {
-          showSnackbar('Info', 'Coming Soon', 'info');
-        };
+        const handlePrintInvoice = () => printInvoice(order, orderNumber);
 
         return (
           <div className="space-y-6 max-w-5xl mx-auto">
@@ -2037,21 +1881,14 @@ const AdminDashboard = () => {
                   &larr; Back
                 </button>
                 <div>
-                  <h2 className="font-h text-xl font-bold text-brand-on-surface">Order #{order._id.substring(order._id.length - 8)}</h2>
+                  <h2 className="font-h text-xl font-bold text-brand-on-surface">Order #{orderNumberMap.get(order._id)}</h2>
                   <p className="text-sm text-brand-on-surface-variant opacity-60 font-sans font-bold">{new Date(order.createdAt).toLocaleString()}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button onClick={handlePrintInvoice} className="bg-brand-primary text-white text-sm px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-brand-primary/20 flex items-center gap-2 transition-transform active:scale-95">
+              <div className="flex items-center gap-3">                <button onClick={handlePrintInvoice} className="bg-brand-primary text-white text-sm px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-brand-primary/20 flex items-center gap-2 transition-transform active:scale-95">
                   <Printer size={16} />
                   Print Invoice
                 </button>
-                {order.paymentMethod === 'cod' && (
-                  <button onClick={handlePrintCODLabel} className="bg-brand-surface-low text-brand-primary border border-brand-primary/20 text-sm px-5 py-2.5 rounded-xl font-bold shadow-sm flex items-center gap-2 transition-transform active:scale-95 hover:bg-brand-surface">
-                    <Printer size={16} />
-                    Cash on Delivery Print
-                  </button>
-                )}
               </div>
             </div>
 

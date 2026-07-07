@@ -225,9 +225,7 @@ export default function Orders() {
                             <Truck size={14} />
                             <span>Track: {order.trackingId}</span>
                           </a>
-                        ) : (
-                          <span className="text-xs font-sans text-brand-on-surface-variant opacity-60">Standard Shipping</span>
-                        )}
+                        ) : null}
                       </div>
                       <div className="sm:text-right flex items-baseline justify-between sm:justify-end gap-3 w-full sm:w-auto">
                         <span className="font-sans text-xs text-brand-on-surface-variant opacity-60">Total Amount:</span>

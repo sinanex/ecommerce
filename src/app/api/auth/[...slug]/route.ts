@@ -9,6 +9,38 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   await dbConnect();
   const slug = (await params).slug.join('/');
 
+  if (slug === 'change-password') {
+    try {
+      const { verifyAuth } = await import('@/lib/auth');
+      const auth = verifyAuth(req);
+      if (!auth || !auth.user || !auth.user.userId) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      }
+
+      const { currentPassword, newPassword } = await req.json();
+
+      const user = await (User as any).findById(auth.user.userId);
+      if (!user) {
+        return NextResponse.json({ message: 'User not found' }, { status: 404 });
+      }
+
+      const isMatch = await bcrypt.compare(currentPassword, (user as any).password);
+      if (!isMatch) {
+        return NextResponse.json({ message: 'Incorrect current password' }, { status: 400 });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+      user.password = hashedPassword;
+      await user.save();
+
+      return NextResponse.json({ message: 'Password updated successfully' }, { status: 200 });
+    } catch (error: any) {
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }
+  }
+
   if (slug === 'register') {
     try {
       const body = await req.json();

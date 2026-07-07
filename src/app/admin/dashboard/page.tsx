@@ -28,7 +28,9 @@ import {
   Cloud,
   Database,
   Activity,
-  Printer
+  Printer,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/config';
@@ -241,6 +243,9 @@ const AdminDashboard = () => {
     adminUsername: '', adminPassword: '',
     salesTags: [] as { name: string, color: string }[]
   });
+  const [adminPasswordState, setAdminPasswordState] = useState({ newPassword: '', confirmPassword: '' });
+  const [isAdminPasswordModalOpen, setIsAdminPasswordModalOpen] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [isBannerEditMode, setIsBannerEditMode] = useState(false);
   const [editingBannerId, setEditingBannerId] = useState<any>(null);
   const [bannerData, setBannerData] = useState({ title: '', subtitle: '', buttonText: '', imageUrl: '', linkUrl: '' });
@@ -402,6 +407,35 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error saving settings:', error);
       showSnackbar('Error', 'Error saving settings', 'error');
+    }
+  };
+
+  const handleAdminPasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminPasswordState.newPassword !== adminPasswordState.confirmPassword) {
+      showSnackbar('Error', 'New passwords do not match', 'error');
+      return;
+    }
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${API_BASE_URL}/api/settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ adminPassword: adminPasswordState.newPassword })
+      });
+      if (response.ok) {
+        showSnackbar('Success', 'Admin password changed successfully!', 'success');
+        setIsAdminPasswordModalOpen(false);
+        setAdminPasswordState({ newPassword: '', confirmPassword: '' });
+      } else {
+        showSnackbar('Error', 'Failed to change admin password', 'error');
+      }
+    } catch (error) {
+      console.error('Error changing admin password:', error);
+      showSnackbar('Error', 'Error changing admin password', 'error');
     }
   };
 
@@ -2416,6 +2450,29 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              {/* Security Settings Configuration */}
+              <div className="bg-white p-6 rounded-2xl border border-brand-surface-normal shadow-sm mb-6">
+                <h3 className="font-h text-lg font-bold text-brand-on-surface mb-4">Security Settings</h3>
+                <div className="space-y-4 max-w-sm mb-6">
+                  <div>
+                    <label className="block text-xs font-medium text-brand-on-surface-variant opacity-60 mb-1">Admin Username</label>
+                    <input
+                      type="text"
+                      value={settings.adminUsername || ''}
+                      onChange={(e) => setSettings({ ...settings, adminUsername: e.target.value })}
+                      className="w-full px-3 py-2 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAdminPasswordModalOpen(true)}
+                  className="bg-brand-surface-low text-brand-on-surface hover:bg-brand-surface border border-brand-surface-normal px-6 py-3 rounded-lg font-bold text-sm transition-colors"
+                >
+                  Change Admin Password
+                </button>
+              </div>
+
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
@@ -2425,6 +2482,68 @@ const AdminDashboard = () => {
                 </button>
               </div>
             </form>
+
+            {/* Admin Password Change Modal */}
+            {isAdminPasswordModalOpen && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+                <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+                  <button 
+                    type="button"
+                    onClick={() => setIsAdminPasswordModalOpen(false)}
+                    className="absolute top-4 right-4 text-brand-on-surface-variant hover:text-brand-on-surface"
+                  >
+                    <X size={20} />
+                  </button>
+                  <h2 className="font-h text-xl font-bold text-brand-on-surface mb-4">Change Admin Password</h2>
+                  <form onSubmit={handleAdminPasswordChange} className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-medium text-brand-on-surface-variant opacity-60 mb-1">New Password</label>
+                      <div className="relative">
+                        <input 
+                          type={showAdminPassword ? "text" : "password"} 
+                          required
+                          value={adminPasswordState.newPassword}
+                          onChange={e => setAdminPasswordState({...adminPasswordState, newPassword: e.target.value})}
+                          className="w-full px-3 py-2 pr-10 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowAdminPassword(!showAdminPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                        >
+                          {showAdminPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-brand-on-surface-variant opacity-60 mb-1">Confirm New Password</label>
+                      <div className="relative">
+                        <input 
+                          type={showAdminPassword ? "text" : "password"} 
+                          required
+                          value={adminPasswordState.confirmPassword}
+                          onChange={e => setAdminPasswordState({...adminPasswordState, confirmPassword: e.target.value})}
+                          className="w-full px-3 py-2 pr-10 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowAdminPassword(!showAdminPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                        >
+                          {showAdminPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+                    <button 
+                      type="submit" 
+                      className="w-full bg-brand-primary text-white py-3 rounded-xl font-bold mt-4 shadow-lg hover:shadow-xl active:scale-95 transition-all"
+                    >
+                      Update Password
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         );
       default:

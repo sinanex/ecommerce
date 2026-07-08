@@ -391,13 +391,18 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('adminToken');
+      
+      // Remove adminPassword from the payload so it isn't unintentionally updated
+      const payload = { ...settings };
+      delete payload.adminPassword;
+
       const response = await fetch(`${API_BASE_URL}/api/settings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(settings)
+        body: JSON.stringify(payload)
       });
       if (response.ok) {
         showSnackbar('Success', 'Settings saved successfully!', 'success');

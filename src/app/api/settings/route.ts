@@ -46,6 +46,10 @@ export async function POST(req: NextRequest) {
       
       updatableFields.forEach(field => {
         if (body[field] !== undefined) {
+          // Do not overwrite adminPassword with an empty string
+          if (field === 'adminPassword' && body[field] === '') {
+            return;
+          }
           settings[field] = body[field];
         }
       });

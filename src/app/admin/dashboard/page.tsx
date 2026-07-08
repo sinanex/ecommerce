@@ -2557,7 +2557,7 @@ const AdminDashboard = () => {
   };
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard & CRM', icon: <TrendingUp size={20} /> },
+    { id: 'dashboard', label: 'Dashboard', icon: <TrendingUp size={20} /> },
     { id: 'orders', label: 'Customer Orders', icon: <ShoppingCart size={20} /> },
     { id: 'products', label: 'Add Products', icon: <PackagePlus size={20} /> },
     { id: 'all-products', label: 'Manage Products', icon: <Package size={20} /> },

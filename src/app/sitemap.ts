@@ -24,7 +24,7 @@ const getCategoryModel = () => {
 };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://6yard.store';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://6yardjersey.com';
 
   // Base routes
   const routes = [

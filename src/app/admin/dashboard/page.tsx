@@ -391,7 +391,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('adminToken');
-      
+
       // Remove adminPassword from the payload so it isn't unintentionally updated
       const payload = { ...settings };
       delete payload.adminPassword;
@@ -1925,9 +1925,9 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3">                <button onClick={handlePrintInvoice} className="bg-brand-primary text-white text-sm px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-brand-primary/20 flex items-center gap-2 transition-transform active:scale-95">
-                  <Printer size={16} />
-                  Print Invoice
-                </button>
+                <Printer size={16} />
+                Print Invoice
+              </button>
               </div>
             </div>
 
@@ -2492,7 +2492,7 @@ const AdminDashboard = () => {
             {isAdminPasswordModalOpen && (
               <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
                 <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setIsAdminPasswordModalOpen(false)}
                     className="absolute top-4 right-4 text-brand-on-surface-variant hover:text-brand-on-surface"
@@ -2504,11 +2504,11 @@ const AdminDashboard = () => {
                     <div>
                       <label className="block text-xs font-medium text-brand-on-surface-variant opacity-60 mb-1">New Password</label>
                       <div className="relative">
-                        <input 
-                          type={showAdminPassword ? "text" : "password"} 
+                        <input
+                          type={showAdminPassword ? "text" : "password"}
                           required
                           value={adminPasswordState.newPassword}
-                          onChange={e => setAdminPasswordState({...adminPasswordState, newPassword: e.target.value})}
+                          onChange={e => setAdminPasswordState({ ...adminPasswordState, newPassword: e.target.value })}
                           className="w-full px-3 py-2 pr-10 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none"
                         />
                         <button
@@ -2523,11 +2523,11 @@ const AdminDashboard = () => {
                     <div>
                       <label className="block text-xs font-medium text-brand-on-surface-variant opacity-60 mb-1">Confirm New Password</label>
                       <div className="relative">
-                        <input 
-                          type={showAdminPassword ? "text" : "password"} 
+                        <input
+                          type={showAdminPassword ? "text" : "password"}
                           required
                           value={adminPasswordState.confirmPassword}
-                          onChange={e => setAdminPasswordState({...adminPasswordState, confirmPassword: e.target.value})}
+                          onChange={e => setAdminPasswordState({ ...adminPasswordState, confirmPassword: e.target.value })}
                           className="w-full px-3 py-2 pr-10 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none"
                         />
                         <button
@@ -2539,8 +2539,8 @@ const AdminDashboard = () => {
                         </button>
                       </div>
                     </div>
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       className="w-full bg-brand-primary text-white py-3 rounded-xl font-bold mt-4 shadow-lg hover:shadow-xl active:scale-95 transition-all"
                     >
                       Update Password

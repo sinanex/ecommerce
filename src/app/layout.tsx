@@ -18,8 +18,40 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "6YARD",
-  description: "6YARD BUILD TO PLAY",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://6yardjersey.com'),
+  title: {
+    default: '6YARD | Buy Football Jerseys Online in India',
+    template: '%s | 6YARD',
+  },
+  description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories. Based in Manjeri, Malappuram, Kerala. Fast delivery across India.',
+  keywords: ['football jerseys India', 'buy football jersey online', 'club jerseys', 'national team jerseys', 'football kits', 'retro football jerseys', 'sports accessories', 'football store Kerala', 'football jersey Manjeri', 'football jersey Malappuram', '6YARD'],
+  openGraph: {
+    title: '6YARD | Buy Football Jerseys Online in India',
+    description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories.',
+    url: 'https://6yardjersey.com',
+    siteName: '6YARD',
+    locale: 'en_IN',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '6YARD | Buy Football Jerseys Online in India',
+    description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://6yardjersey.com',
+  },
 };
 
 import { CartProvider } from "@/context/CartContext";
@@ -38,6 +70,40 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "6YARD",
+                "url": "https://6yardjersey.com",
+                "logo": "https://6yardjersey.com/logo.png",
+                "description": "Premium football jerseys and sports accessories based in Manjeri, Kerala.",
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": "Manjeri, Malappuram",
+                  "addressRegion": "Kerala",
+                  "addressCountry": "IN"
+                }
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "6YARD",
+                "url": "https://6yardjersey.com",
+                "potentialAction": {
+                  "@type": "SearchAction",
+                  "target": "https://6yardjersey.com/search?q={search_term_string}",
+                  "query-input": "required name=search_term_string"
+                }
+              }
+            ])
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <SnackbarProvider>
           <CartProvider>

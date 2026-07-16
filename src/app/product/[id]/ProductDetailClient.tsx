@@ -709,7 +709,7 @@ export default function ProductDetailClient() {
 
       <div className="mt-24 max-w-4xl mx-auto space-y-4">
         {[
-          { id: 'description', title: 'Product Description', content: <p className="py-4 text-brand-on-surface-variant leading-relaxed">{product.description}</p> },
+          { id: 'description', title: 'Product Description', content: <p className="py-4 text-brand-on-surface-variant leading-relaxed whitespace-pre-wrap">{product.description}</p> },
         ].map(section => (
           <div key={section.id} className="border-b border-brand-surface-normal">
             <button

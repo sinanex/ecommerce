@@ -78,7 +78,6 @@ export default function ProductCard({ product, isSelectable, isSelected, onSelec
         </div>
       </Link>
 
-      <p className="font-sans text-[9px] text-brand-primary mb-0.5 uppercase tracking-tight font-bold leading-none">{Array.isArray(product.category) ? product.category.join(', ') : product.category}</p>
       <h3 className="font-sans text-xs leading-tight font-bold text-brand-on-surface mb-0.5 group-hover:text-brand-primary transition-colors line-clamp-2">{product.name}</h3>
       <div className="flex items-center gap-1.5">
         <p className="font-h text-sm text-brand-primary font-bold">₹{product.price.toFixed(2)}</p>

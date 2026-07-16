@@ -41,15 +41,22 @@ export default function SearchPage() {
     // Priority 1: Match Name
     const nameMatches = allProducts.filter(p => p.name?.toLowerCase().includes(query));
 
+    const isCategoryMatch = (p: any, q: string) => {
+      if (Array.isArray(p.category)) {
+        return p.category.some((c: string) => c?.toLowerCase().includes(q));
+      }
+      return typeof p.category === 'string' && p.category.toLowerCase().includes(q);
+    };
+
     // Priority 2: Match Category
     const categoryMatches = allProducts.filter(p => {
       if (p.name?.toLowerCase().includes(query)) return false;
-      return p.category?.toLowerCase().includes(query);
+      return isCategoryMatch(p, query);
     });
 
     // Priority 3: Match Description
     const descMatches = allProducts.filter(p => {
-      if (p.name?.toLowerCase().includes(query) || p.category?.toLowerCase().includes(query)) return false;
+      if (p.name?.toLowerCase().includes(query) || isCategoryMatch(p, query)) return false;
       return p.description?.toLowerCase().includes(query);
     });
 

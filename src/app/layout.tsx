@@ -59,6 +59,7 @@ import { SnackbarProvider } from "@/context/SnackbarContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import MetaPixel from "@/components/MetaPixel";
 
 export default function RootLayout({
   children,
@@ -105,6 +106,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <MetaPixel />
         <SnackbarProvider>
           <CartProvider>
             <Navbar />

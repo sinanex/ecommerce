@@ -4,6 +4,7 @@ import React from 'react';
 import { Send, Package } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import { usePurchase } from '@/hooks/usePurchase';
 
 // Checkmark that draws itself in with a stroke animation
 function AnimatedCheck() {
@@ -95,6 +96,24 @@ export default function Success() {
       setOrder(JSON.parse(lastOrder));
     }
   }, []);
+
+  const purchaseParams = React.useMemo(() => {
+    if (!order) return null;
+    const contents = (order.items || []).map((item: any) => ({
+      id: typeof item.product === 'object' && item.product ? item.product._id : item.product,
+      quantity: item.quantity
+    }));
+    const num_items = (order.items || []).reduce((acc: number, item: any) => acc + item.quantity, 0);
+    return {
+      transaction_id: order._id,
+      value: order.totalAmount,
+      currency: "INR",
+      contents,
+      num_items
+    };
+  }, [order]);
+
+  usePurchase(purchaseParams);
 
   if (!order) return null;
 

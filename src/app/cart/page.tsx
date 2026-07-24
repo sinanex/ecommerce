@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
 import AuthModal from '@/components/AuthModal';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { trackAddToCart } from '@/lib/facebookPixel';
 
 export default function Cart() {
   const { showSnackbar } = useSnackbar();

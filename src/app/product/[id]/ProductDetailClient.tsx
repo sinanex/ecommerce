@@ -12,6 +12,8 @@ import { Product } from '@/types';
 import AuthModal from '@/components/AuthModal';
 import { useCart } from '@/context/CartContext';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { useViewContent } from '@/hooks/useViewContent';
+import { trackAddToCart } from '@/lib/facebookPixel';
 
 const PRODUCT_IMAGES = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAQ38GlBp8aAxQiOSE483yc-jVtTv1lt7uPjbJPMqq3BnoBXAnwpLhriKduHt78pWPxt4xoy1fHnfGwE-Z4nwkIhmuD6SKOzj8fAilcBGsvR72hRYVnuhnY_jmPdmyIXyqjEgTmkBI6H39e7RH1PlUPj0lLJ2YJdi5szTSKj2rXwdus87pu3lNAOKiOpjwDco5G41Z4R5-DruwUZz3q6YoKdx9EFu5vVb-j5u6CZEBZVgEpiSLB8z4V6aRuzIXd4KsBh6xpiqKxvXQ',
@@ -114,6 +116,7 @@ export default function ProductDetailClient() {
   const [isBuying, setIsBuying] = useState(false);
   const { addToCart } = useCart();
   const [product, setProduct] = useState<any>(null);
+  useViewContent(product);
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [productNotFound, setProductNotFound] = useState(false);
@@ -369,6 +372,7 @@ export default function ProductDetailClient() {
     setIsAdding(true);
     try {
       await addToCart(product, selectedSize, 1);
+      trackAddToCart(product);
       navigate.push('/cart');
     } catch (err) {
       showSnackbar("Error", "Failed to add to cart", "error");
@@ -396,6 +400,7 @@ export default function ProductDetailClient() {
     setIsBuying(true);
     try {
       const itemId = await addToCart(product, selectedSize, 1, true);
+      trackAddToCart(product);
       
       const token = localStorage.getItem('userToken');
       let defaultAddr = null;

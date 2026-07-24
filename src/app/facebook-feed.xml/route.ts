@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
             const brand = product.brand || '6yard';
 
             // Format standard RSS feed item XML segment
-            const productXml = 
+            const productXml =
               `      <item>\n` +
               `        <g:id>${escapeXml(product._id.toString())}</g:id>\n` +
               `        <g:title>${escapeXml(product.name)}</g:title>\n` +
@@ -140,9 +140,9 @@ export async function GET(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Failed to generate Facebook feed:', error);
-    
+
     // In case of high-level initialization failure, return a static valid XML showing error details
-    const errorXml = 
+    const errorXml =
       `<?xml version="1.0" encoding="UTF-8"?>\n` +
       `<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">\n` +
       `  <channel>\n` +

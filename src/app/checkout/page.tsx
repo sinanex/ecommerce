@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { API_BASE_URL } from '@/config';
 import { useCart } from '@/context/CartContext';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { trackInitiateCheckout } from '@/lib/facebookPixel';
 
 function CheckoutContent() {
   const { showSnackbar } = useSnackbar();
@@ -35,6 +36,22 @@ function CheckoutContent() {
     summary: { subtotal: 0, shippingCost: 0, total: 0 },
     address: null
   };
+
+  useEffect(() => {
+    if (isLoaded && cartItems && cartItems.length > 0) {
+      const contents = cartItems.map((item: any) => ({
+        id: item.product?._id || item.product,
+        quantity: item.quantity
+      }));
+      const num_items = cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
+      trackInitiateCheckout({
+        value: summary.total,
+        currency: "INR",
+        num_items,
+        contents
+      });
+    }
+  }, [isLoaded, cartItems, summary]);
 
   const [paymentMethod, setPaymentMethod] = useState('online');
   const [showMockRazorpay, setShowMockRazorpay] = useState(false);

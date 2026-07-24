@@ -46,9 +46,8 @@ export async function GET(req: NextRequest) {
             .cursor();
 
           for (let product = await cursor.next(); product != null; product = await cursor.next()) {
-            // Retrieve slug from DB, if missing generate from name
-            const slug = product.slug || slugify(product.name);
-            const link = toAbsoluteUrl(`/product/${slug}`, baseUrl);
+            // Map product link to product page ID route
+            const link = toAbsoluteUrl(`/product/${product._id.toString()}`, baseUrl);
 
             // Determine main image link
             let mainImage = '';

@@ -116,6 +116,7 @@ export default function ProductDetailClient() {
   const [product, setProduct] = useState<any>(null);
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [productNotFound, setProductNotFound] = useState(false);
 
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({ transformOrigin: 'center' });
   const [isZoomed, setIsZoomed] = useState(false);
@@ -294,6 +295,7 @@ export default function ProductDetailClient() {
 
   useEffect(() => {
     if (!id) return;
+    setProductNotFound(false);
 
     // List of static mock ids
     const mockIds = ['1', '2', '3', '4', '5', '6', '7', '8', 'rem-1', 'rem-2', 'rem-3', 'rem-4'];
@@ -341,18 +343,7 @@ export default function ProductDetailClient() {
       })
       .catch(err => {
         console.error("Fetch detail error:", err);
-        // Default fallback if any live fetch fails
-        setProduct({
-          _id: id,
-          name: 'Manchester Home Kit 24/25',
-          price: 89.99,
-          discount_price: undefined,
-          category: 'Football',
-          description: 'Blends heritage with cutting-edge HEAT.RDY technology. Designed for peak performance on the pitch and premium style in the stands.',
-          sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-          colors: ['Red', 'White'],
-          images: PRODUCT_IMAGES
-        });
+        setProductNotFound(true);
       })
       .finally(() => {
         setLoading(false);
@@ -445,6 +436,20 @@ export default function ProductDetailClient() {
       setIsBuying(false);
     }
   };
+
+  if (productNotFound) {
+    return (
+      <div className="min-h-screen bg-brand-surface flex flex-col items-center justify-center px-6">
+        <h1 className="font-h text-3xl md:text-4xl font-bold text-brand-on-surface mb-4">Product Not Found</h1>
+        <p className="font-sans text-brand-on-surface-variant text-center max-w-md mb-8">
+          The product you are looking for does not exist or may have been removed.
+        </p>
+        <Link href="/" className="bg-brand-primary hover:bg-brand-primary-hover text-white font-sans font-bold py-4 px-8 rounded-xl transition-all uppercase tracking-widest text-xs">
+          Go Back Home
+        </Link>
+      </div>
+    );
+  }
 
   if (loading || !product) {
     return (

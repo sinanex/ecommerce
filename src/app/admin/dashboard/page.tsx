@@ -351,6 +351,11 @@ const AdminDashboard = () => {
       const response = await fetch(`${API_BASE_URL}/api/orders/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminToken');
+        navigate.push('/admin');
+        return;
+      }
       const data = await response.json();
       if (Array.isArray(data)) {
         setOrders(data);
@@ -530,6 +535,11 @@ const AdminDashboard = () => {
           'Authorization': `Bearer ${token}`
         }
       });
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminToken');
+        navigate.push('/admin');
+        return;
+      }
       const data = await response.json();
       setProducts(data);
     } catch (error) {

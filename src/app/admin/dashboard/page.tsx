@@ -226,6 +226,8 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [ordersLoading, setOrdersLoading] = useState(true);
   const [products, setProducts] = useState<any[]>([]);
   const [banners, setBanners] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -347,6 +349,7 @@ const AdminDashboard = () => {
 
   const fetchOrders = async () => {
     try {
+      setOrdersLoading(true);
       const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_BASE_URL}/api/orders/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -362,6 +365,8 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching orders:', error);
+    } finally {
+      setOrdersLoading(false);
     }
   };
 
@@ -529,6 +534,7 @@ const AdminDashboard = () => {
 
   const fetchProducts = async () => {
     try {
+      setProductsLoading(true);
       const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_BASE_URL}/api/products`, {
         headers: {
@@ -544,6 +550,8 @@ const AdminDashboard = () => {
       setProducts(data);
     } catch (error) {
       console.error('Error fetching products:', error);
+    } finally {
+      setProductsLoading(false);
     }
   };
 
@@ -1563,7 +1571,13 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-xl border border-brand-surface-normal overflow-hidden">
-              <table className="w-full text-left">
+              {productsLoading ? (
+                <div className="flex flex-col items-center justify-center py-20 bg-white">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+                  <p className="mt-4 font-sans text-xs font-bold text-brand-on-surface-variant opacity-60 uppercase tracking-widest">Loading Products...</p>
+                </div>
+              ) : (
+                <table className="w-full text-left">
                 <thead className="bg-brand-surface-low border-b border-brand-surface-normal">
                   <tr>
                     <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tl-2xl w-24">Image</th>
@@ -1698,7 +1712,8 @@ const AdminDashboard = () => {
                     </tr>
                   )}
                 </tbody>
-              </table>
+                </table>
+              )}
             </div>
           </div>
         );
@@ -1787,8 +1802,15 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-xl border border-brand-surface-normal overflow-hidden overflow-x-auto p-4">
-              <table className="w-full text-left min-w-[1000px]">
+            {ordersLoading ? (
+              <div className="bg-white rounded-xl shadow-xl border border-brand-surface-normal p-20 flex flex-col items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+                <p className="mt-4 font-sans text-xs font-bold text-brand-on-surface-variant opacity-60 uppercase tracking-widest">Loading Orders...</p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-white rounded-xl shadow-xl border border-brand-surface-normal overflow-hidden overflow-x-auto p-4">
+                  <table className="w-full text-left min-w-[1000px]">
                 <thead className="bg-brand-surface-low border-b border-brand-surface-normal">
                   <tr>
                     <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tl-2xl">Order ID & Date</th>
@@ -1900,6 +1922,8 @@ const AdminDashboard = () => {
                   Next &rarr;
                 </button>
               </div>
+            )}
+              </>
             )}
           </div>
         );

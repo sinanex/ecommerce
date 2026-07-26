@@ -82,15 +82,20 @@ export async function GET(req: NextRequest) {
             const formattedPrice = `${priceVal} ${currency}`;
 
             // Build product type breadcrumb string
-            let productType = '';
+            let categories: string[] = [];
             if (Array.isArray(product.category)) {
-              productType = product.category.join(' > ');
+              categories.push(...product.category);
             } else if (typeof product.category === 'string') {
-              productType = product.category;
+              categories.push(product.category);
             }
             if (product.subcategory) {
-              productType = productType ? `${productType} > ${product.subcategory}` : product.subcategory;
+              categories.push(product.subcategory);
             }
+
+            let productType = categories
+              .filter(c => c && c.toUpperCase() !== 'ALL COLLECTION')
+              .join(' > ');
+
             if (!productType) {
               productType = 'General';
             }

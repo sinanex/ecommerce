@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
               : product.price;
             const formattedPrice = `${priceVal} ${currency}`;
 
-            // Build product type breadcrumb string
+            // Extract and clean categories
             let categories: string[] = [];
             if (Array.isArray(product.category)) {
               categories.push(...product.category);
@@ -92,13 +92,16 @@ export async function GET(req: NextRequest) {
               categories.push(product.subcategory);
             }
 
-            let productType = categories
-              .filter(c => c && c.toUpperCase() !== 'ALL COLLECTION')
-              .join(' > ');
+            // Remove placeholder values
+            const placeholders = ['ALL PRODUCTS', 'ALL COLLECTION', 'UNCATEGORIZED'];
+            const validCategories = categories.filter(c => {
+              if (!c) return false;
+              return !placeholders.includes(c.toUpperCase().trim());
+            });
 
-            if (!productType) {
-              productType = 'General';
-            }
+            // Every product must have exactly one valid product_type. 
+            // If it belongs to multiple, use the primary (first valid) category.
+            const productType = validCategories.length > 0 ? validCategories[0] : 'General';
 
             const brand = product.brand || '6yard';
 

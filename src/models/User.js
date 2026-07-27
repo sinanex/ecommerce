@@ -7,11 +7,9 @@ const addressSchema = new mongoose.Schema({
   locality: { type: String, required: true },
   address: { type: String, required: true },
   city: { type: String, required: true },
-  state: { type: String, required: true },
-  country: { type: String, default: 'India' },
   landmark: { type: String },
-  alternatePhone: { type: String },
-  addressType: { type: String, enum: ['Home', 'Work'], default: 'Home' },
+  alternatePhone: { type: String, required: true },
+  addressType: { type: String, default: 'Home' },
   isDefault: { type: Boolean, default: false }
 });
 
@@ -31,4 +29,5 @@ const userSchema = new mongoose.Schema({
   ]
 }, { timestamps: true });
 
-module.exports = mongoose.models.User || mongoose.model('User', userSchema);
+delete mongoose.models.User;
+module.exports = mongoose.model('User', userSchema);

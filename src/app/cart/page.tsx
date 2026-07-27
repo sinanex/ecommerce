@@ -25,7 +25,7 @@ export default function Cart() {
   const [user, setUser] = useState<any>(null);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [newAddress, setNewAddress] = useState({
-    name: '', phone: '', pincode: '', locality: '', address: '', city: '', state: 'Kerala', country: 'India', landmark: '', alternatePhone: '', addressType: 'Home'
+    name: '', phone: '', pincode: '', locality: '', address: '', city: '', landmark: '', alternatePhone: '', addressType: ''
   });
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
@@ -165,9 +165,9 @@ export default function Cart() {
       }
     }
 
-    localStorage.setItem('checkoutState', JSON.stringify({ 
-      cartItems: itemsToCheckout, 
-      summary: { subtotal: currentSubtotal, shippingCost, total: currentTotal }, 
+    localStorage.setItem('checkoutState', JSON.stringify({
+      cartItems: itemsToCheckout,
+      summary: { subtotal: currentSubtotal, shippingCost, total: currentTotal },
       address: addr,
       isBuyNow,
       buyNowItemId
@@ -284,7 +284,7 @@ export default function Cart() {
                         <span className="font-bold text-brand-on-surface text-base">₹{(item.product?.discount_price || item.product?.price || 0).toFixed(0)}</span>
                       </div>
                     </div>
-                    
+
                     <div className="mt-2 flex items-center gap-3">
                       {item.size && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-brand-surface-low border border-brand-surface-normal rounded text-[11px] font-bold text-brand-on-surface">
@@ -455,28 +455,28 @@ export default function Cart() {
                     <button type="button" onClick={() => { setIsAddingAddress(false); setIsEditingAddressId(null); }} className="flex items-center gap-2 text-brand-primary font-bold text-xs uppercase tracking-widest mb-4">
                       <ChevronLeft size={16} /> Back to addresses
                     </button>
-                      <div className="space-y-4">
-                        <input type="text" placeholder="Name" required value={newAddress.name} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, name: e.target.value })} />
-                        <textarea placeholder="Address" required value={newAddress.address} rows={3} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans resize-none text-sm" onChange={e => setNewAddress({ ...newAddress, address: e.target.value })} />
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <input type="text" placeholder="Post Name" required value={newAddress.locality} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, locality: e.target.value })} />
-                          <input type="text" placeholder="Place" required value={newAddress.city} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} />
-                          <input type="text" placeholder="Pincode" required pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" value={newAddress.pincode} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })} />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <input type="tel" placeholder="Mobile 1" required pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" value={newAddress.phone} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
-                          <input type="tel" placeholder="Mobile 2 (Optional)" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" value={newAddress.alternatePhone} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, alternatePhone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
-                        </div>
+                    <div className="space-y-4">
+                      <input type="text" placeholder="Name" required value={newAddress.name} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, name: e.target.value })} />
+                      <textarea placeholder="Address" required value={newAddress.address} rows={3} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans resize-none text-sm" onChange={e => setNewAddress({ ...newAddress, address: e.target.value })} />
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" placeholder="Post Name" required value={newAddress.locality} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, locality: e.target.value })} />
+                        <input type="text" placeholder="Place" required value={newAddress.city} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} />
+                        <input type="text" placeholder="Pincode" required pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" value={newAddress.pincode} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })} />
                       </div>
-                      <button type="submit" className="w-full bg-brand-primary text-white py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-xs shadow-xl shadow-brand-primary/20 mt-4">
-                        {isEditingAddressId ? 'Update Address' : 'Save and Deliver Here'}
-                      </button>
-                    </form>
-                  ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="tel" placeholder="Mobile 1" required pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" value={newAddress.phone} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
+                        <input type="tel" placeholder="Mobile 2" required pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" value={newAddress.alternatePhone} className="w-full px-4 py-3 bg-brand-surface border border-brand-surface-normal rounded-xl font-sans text-sm" onChange={e => setNewAddress({ ...newAddress, alternatePhone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
+                      </div>
+                    </div>
+                    <button type="submit" className="w-full bg-brand-primary text-white py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-xs shadow-xl shadow-brand-primary/20 mt-4">
+                      {isEditingAddressId ? 'Update Address' : 'Save and Deliver Here'}
+                    </button>
+                  </form>
+                ) : (
                   <div className="space-y-4">
                     {(!user?.addresses || user.addresses.length === 0) && (
                       <button onClick={() => {
-                        setNewAddress({ name: '', phone: '', pincode: '', locality: '', address: '', city: '', state: 'Kerala', country: 'India', landmark: '', alternatePhone: '', addressType: 'Home' });
+                        setNewAddress({ name: '', phone: '', pincode: '', locality: '', address: '', city: '', landmark: '', alternatePhone: '', addressType: '' });
                         setIsEditingAddressId(null);
                         setIsAddingAddress(true);
                       }} className="w-full p-6 border-2 border-dashed border-brand-surface-normal rounded-2xl text-brand-primary font-bold flex items-center justify-center gap-2 hover:border-brand-primary hover:bg-brand-primary/5 transition-all mb-4">
@@ -504,11 +504,9 @@ export default function Cart() {
                                   locality: addr.locality || '',
                                   address: addr.address || '',
                                   city: addr.city || '',
-                                  state: addr.state || 'Kerala',
-                                  country: addr.country || 'India',
                                   landmark: addr.landmark || '',
                                   alternatePhone: addr.alternatePhone || '',
-                                  addressType: addr.addressType || 'Home'
+                                  addressType: addr.addressType || ''
                                 });
                                 setIsEditingAddressId(addr._id);
                                 setIsAddingAddress(true);

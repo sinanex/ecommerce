@@ -319,10 +319,28 @@ const AdminDashboard = () => {
     if (!token) {
       navigate.push('/admin');
     } else {
+      const savedTab = localStorage.getItem('adminActiveTab');
+      if (savedTab) setActiveTab(savedTab);
+
+      const savedOrderId = localStorage.getItem('adminViewingOrderId');
+      if (savedOrderId) setViewingOrderId(savedOrderId);
+
       fetchCategories();
       fetchTeams();
     }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('adminActiveTab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (viewingOrderId) {
+      localStorage.setItem('adminViewingOrderId', viewingOrderId);
+    } else {
+      localStorage.removeItem('adminViewingOrderId');
+    }
+  }, [viewingOrderId]);
 
   useEffect(() => {
     if (activeTab === 'orders' || activeTab === 'dashboard') {
@@ -354,7 +372,7 @@ const AdminDashboard = () => {
       const response = await fetch(`${API_BASE_URL}/api/orders/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401 || response.status === 403 || response.status === 500) {
         localStorage.removeItem('adminToken');
         navigate.push('/admin');
         return;
@@ -541,7 +559,7 @@ const AdminDashboard = () => {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401 || response.status === 403 || response.status === 500) {
         localStorage.removeItem('adminToken');
         navigate.push('/admin');
         return;
@@ -1929,6 +1947,15 @@ const AdminDashboard = () => {
         );
       }
       case 'order-details': {
+        if (ordersLoading) {
+          return (
+            <div className="bg-white rounded-xl shadow-xl border border-brand-surface-normal p-20 flex flex-col items-center justify-center max-w-5xl mx-auto">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+              <p className="mt-4 font-sans text-xs font-bold text-brand-on-surface-variant opacity-60 uppercase tracking-widest">Loading Order Details...</p>
+            </div>
+          );
+        }
+
         const order = orders.find(o => o._id === viewingOrderId);
         if (!order) {
           return (

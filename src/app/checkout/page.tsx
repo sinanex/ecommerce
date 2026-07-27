@@ -57,10 +57,13 @@ function CheckoutContent() {
   const [showMockRazorpay, setShowMockRazorpay] = useState(false);
 
   // Compute dynamic shipping and total
-  const codAmount = settings?.codDeliveryAmount || 100;
+  const totalQuantity = cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
+  const baseShippingCharge = settings?.codDeliveryAmount || 50;
+  const shippingCharge = totalQuantity > 0 ? Math.ceil(totalQuantity / 2) * baseShippingCharge : 0;
+
   const isCod = paymentMethod === 'cod';
-  const dynamicTotal = summary.subtotal;
-  const payableAmount = isCod ? codAmount : dynamicTotal;
+  const dynamicTotal = summary.subtotal + shippingCharge;
+  const payableAmount = isCod ? shippingCharge : dynamicTotal;
 
   // Redirect if no data (e.g., direct URL access)
   React.useEffect(() => {
@@ -88,12 +91,12 @@ function CheckoutContent() {
         shippingAddress: address,
         paymentMethod: isCod ? 'cod' : 'online',
         totalAmount: dynamicTotal,
-        shippingCharge: 0,
+        shippingCharge: shippingCharge,
         subtotal: summary.subtotal,
         razorpayPaymentId: paymentDetails?.razorpayPaymentId,
         razorpayOrderId: paymentDetails?.razorpayOrderId,
         razorpaySignature: paymentDetails?.razorpaySignature,
-        advancePaid: isCod ? codAmount : summary.total
+        advancePaid: isCod ? shippingCharge : dynamicTotal
       };
 
       const response = await fetch(`${API_BASE_URL}/api/orders`, {
@@ -297,6 +300,21 @@ function CheckoutContent() {
                 </div>
               ))}
             </div>
+
+            <div className="mt-6 pt-4 border-t border-brand-surface-normal space-y-2">
+              <div className="flex justify-between text-sm text-brand-on-surface-variant">
+                <span>Subtotal</span>
+                <span className="font-bold text-brand-on-surface">₹{summary.subtotal.toFixed(0)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-brand-on-surface-variant">
+                <span>Shipping</span>
+                <span className="font-bold text-brand-on-surface">₹{shippingCharge.toFixed(0)}</span>
+              </div>
+              <div className="flex justify-between text-base font-bold mt-2 pt-2 border-t border-brand-surface-normal border-dashed text-brand-on-surface">
+                <span>Total Amount</span>
+                <span>₹{dynamicTotal.toFixed(0)}</span>
+              </div>
+            </div>
           </section>
 
           {/* Step 3: Payment Method */}
@@ -305,11 +323,11 @@ function CheckoutContent() {
 
             <div className="border-y sm:border border-brand-surface-normal sm:rounded-xl overflow-hidden bg-white">
               {[
-                { id: 'cod', amount: codAmount, title: `COD Partial Payment (Pay ₹${summary.total.toFixed(0)} on delivery)` },
-                { id: 'upi', amount: summary.subtotal, title: 'Pay via UPI' },
-                { id: 'cards', amount: summary.subtotal, title: 'Pay via Debit/Credit cards' },
-                { id: 'wallets', amount: summary.subtotal, title: 'Pay via Wallets' },
-                { id: 'netbanking', amount: summary.subtotal, title: 'Pay via NetBanking' },
+                { id: 'cod', amount: shippingCharge, title: `COD Partial Payment (Pay ₹${(dynamicTotal - shippingCharge).toFixed(0)} on delivery)` },
+                { id: 'upi', amount: dynamicTotal, title: 'Pay via UPI' },
+                { id: 'cards', amount: dynamicTotal, title: 'Pay via Debit/Credit cards' },
+                { id: 'wallets', amount: dynamicTotal, title: 'Pay via Wallets' },
+                { id: 'netbanking', amount: dynamicTotal, title: 'Pay via NetBanking' },
               ].map((method, index) => (
                 <div
                   key={method.id}

@@ -1578,140 +1578,140 @@ const AdminDashboard = () => {
                 </div>
               ) : (
                 <table className="w-full text-left">
-                <thead className="bg-brand-surface-low border-b border-brand-surface-normal">
-                  <tr>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tl-2xl w-24">Image</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Product Details</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Category</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Stock Qty</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Price</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tr-2xl text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-brand-surface-normal">
-                  {products.map((product) => (
-                    <tr key={product._id} className="hover:bg-brand-surface-low/50 transition-colors group">
-                      <td className="px-4 py-2">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-brand-surface-low border border-brand-surface-normal">
-                          {product.images?.[0] ? (
-                            <img src={product.images[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">No Img</div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-2">
-                        <p className="font-h text-sm font-bold text-brand-on-surface line-clamp-2">
-                          {product.name}
-                          {product.salesTag && (
-                            <span
-                              className="ml-2 inline-block px-2 py-0.5 text-[10px] font-bold rounded-full text-white align-middle"
-                              style={{ backgroundColor: settings?.salesTags?.find((t: any) => t.name === product.salesTag)?.color || '#ff0000' }}
-                            >
-                              {product.salesTag}
-                            </span>
-                          )}
-                        </p>
-                      </td>
-                      <td className="px-4 py-2">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm text-gray-500 text-brand-on-surface-variant opacity-80">{Array.isArray(product.category) ? product.category.join(', ') : product.category}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2 max-w-[200px]">
-                        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x">
-                          {product.sizeStocks && product.sizeStocks.length > 0 ? (
-                            product.sizeStocks.map((sz: any, i: number) => (
-                              <div key={i} className="flex flex-col items-center justify-center bg-brand-surface-low border border-brand-surface-normal rounded-md px-2 py-1 min-w-[40px] snap-start">
-                                <span className="text-[10px] font-bold text-brand-on-surface-variant opacity-60">{sz.size}</span>
-                                <span className="text-xs font-bold text-brand-primary">{sz.stock}</span>
-                              </div>
-                            ))
-                          ) : (
-                            <span className="text-xs text-brand-on-surface-variant opacity-60">N/A</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-2">
-                        <div className="flex flex-col gap-1">
-                          {product.discount_price ? (
-                            <>
-                              <span className="font-h text-base font-bold text-brand-on-surface">₹{product.discount_price}</span>
-                              <span className="font-sans text-[10px] font-bold line-through text-brand-on-surface-variant opacity-40">₹{product.price}</span>
-                            </>
-                          ) : (
-                            <span className="font-h text-base font-bold text-brand-on-surface">₹{product.price}</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-2">
-                        <div className="flex justify-end gap-3">
-                          <button
-                            onClick={() => {
-                              setIsEditMode(true);
-                              setEditingProductId(product._id);
-
-                              const productFormState = {
-                                name: product.name || '',
-                                description: product.description || '',
-                                brand: product.brand || '',
-                                team: product.team || '',
-                                category: Array.isArray(product.category) ? product.category : (product.category ? [product.category] : []),
-                                subcategory: product.subcategory || '',
-                                price: product.price || '',
-                                discount_price: product.discount_price || '',
-                                stock: product.stock || 0,
-                                isAvailable: product.isAvailable !== undefined ? product.isAvailable : true,
-                                sizes: Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes || '',
-                                sizeStocks: product.sizeStocks && product.sizeStocks.length > 0
-                                  ? product.sizeStocks.map((s: any) => ({ size: s.size, stock: s.stock }))
-                                  : [
-                                    { size: 'S', stock: '' },
-                                    { size: 'M', stock: '' },
-                                    { size: 'L', stock: '' },
-                                    { size: 'XL', stock: '' },
-                                    { size: 'XXL', stock: '' }
-                                  ],
-                                salesTag: product.salesTag || '',
-                                colors: Array.isArray(product.colors) ? product.colors.join(', ') : product.colors || '',
-                                customNameNumber: product.customNameNumber || false,
-                                tempImages: Array(5).fill(null),
-                                existingImages: [
-                                  product.images?.[0] || null,
-                                  product.images?.[1] || null,
-                                  product.images?.[2] || null,
-                                  product.images?.[3] || null,
-                                  product.images?.[4] || null
-                                ]
-                              };
-
-                              setProductForms([productFormState]);
-                              setActiveTab('products');
-                            }}
-                            className="p-2.5 rounded-xl text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-all active:scale-95"
-                            title="Edit Product"
-                          >
-                            <Edit size={18} />
-                          </button>
-                          <button
-                            onClick={() => deleteProduct(product._id)}
-                            className="p-2.5 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 transition-all active:scale-95"
-                            title="Delete Product"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {products.length === 0 && (
+                  <thead className="bg-brand-surface-low border-b border-brand-surface-normal">
                     <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-sans font-bold text-sm uppercase tracking-widest">
-                        No products found. Start by adding one.
-                      </td>
+                      <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tl-2xl w-24">Image</th>
+                      <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Product Details</th>
+                      <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Category</th>
+                      <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Stock Qty</th>
+                      <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Price</th>
+                      <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tr-2xl text-right">Actions</th>
                     </tr>
-                  )}
-                </tbody>
+                  </thead>
+                  <tbody className="divide-y divide-brand-surface-normal">
+                    {products.map((product) => (
+                      <tr key={product._id} className="hover:bg-brand-surface-low/50 transition-colors group">
+                        <td className="px-4 py-2">
+                          <div className="w-10 h-10 rounded-xl overflow-hidden bg-brand-surface-low border border-brand-surface-normal">
+                            {product.images?.[0] ? (
+                              <img src={product.images[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">No Img</div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-2">
+                          <p className="font-h text-sm font-bold text-brand-on-surface line-clamp-2">
+                            {product.name}
+                            {product.salesTag && (
+                              <span
+                                className="ml-2 inline-block px-2 py-0.5 text-[10px] font-bold rounded-full text-white align-middle"
+                                style={{ backgroundColor: settings?.salesTags?.find((t: any) => t.name === product.salesTag)?.color || '#ff0000' }}
+                              >
+                                {product.salesTag}
+                              </span>
+                            )}
+                          </p>
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-sm text-gray-500 text-brand-on-surface-variant opacity-80">{Array.isArray(product.category) ? product.category.join(', ') : product.category}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-2 max-w-[200px]">
+                          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x">
+                            {product.sizeStocks && product.sizeStocks.length > 0 ? (
+                              product.sizeStocks.map((sz: any, i: number) => (
+                                <div key={i} className="flex flex-col items-center justify-center bg-brand-surface-low border border-brand-surface-normal rounded-md px-2 py-1 min-w-[40px] snap-start">
+                                  <span className="text-[10px] font-bold text-brand-on-surface-variant opacity-60">{sz.size}</span>
+                                  <span className="text-xs font-bold text-brand-primary">{sz.stock}</span>
+                                </div>
+                              ))
+                            ) : (
+                              <span className="text-xs text-brand-on-surface-variant opacity-60">N/A</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="flex flex-col gap-1">
+                            {product.discount_price ? (
+                              <>
+                                <span className="font-h text-base font-bold text-brand-on-surface">₹{product.discount_price}</span>
+                                <span className="font-sans text-[10px] font-bold line-through text-brand-on-surface-variant opacity-40">₹{product.price}</span>
+                              </>
+                            ) : (
+                              <span className="font-h text-base font-bold text-brand-on-surface">₹{product.price}</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="flex justify-end gap-3">
+                            <button
+                              onClick={() => {
+                                setIsEditMode(true);
+                                setEditingProductId(product._id);
+
+                                const productFormState = {
+                                  name: product.name || '',
+                                  description: product.description || '',
+                                  brand: product.brand || '',
+                                  team: product.team || '',
+                                  category: Array.isArray(product.category) ? product.category : (product.category ? [product.category] : []),
+                                  subcategory: product.subcategory || '',
+                                  price: product.price || '',
+                                  discount_price: product.discount_price || '',
+                                  stock: product.stock || 0,
+                                  isAvailable: product.isAvailable !== undefined ? product.isAvailable : true,
+                                  sizes: Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes || '',
+                                  sizeStocks: product.sizeStocks && product.sizeStocks.length > 0
+                                    ? product.sizeStocks.map((s: any) => ({ size: s.size, stock: s.stock }))
+                                    : [
+                                      { size: 'S', stock: '' },
+                                      { size: 'M', stock: '' },
+                                      { size: 'L', stock: '' },
+                                      { size: 'XL', stock: '' },
+                                      { size: 'XXL', stock: '' }
+                                    ],
+                                  salesTag: product.salesTag || '',
+                                  colors: Array.isArray(product.colors) ? product.colors.join(', ') : product.colors || '',
+                                  customNameNumber: product.customNameNumber || false,
+                                  tempImages: Array(5).fill(null),
+                                  existingImages: [
+                                    product.images?.[0] || null,
+                                    product.images?.[1] || null,
+                                    product.images?.[2] || null,
+                                    product.images?.[3] || null,
+                                    product.images?.[4] || null
+                                  ]
+                                };
+
+                                setProductForms([productFormState]);
+                                setActiveTab('products');
+                              }}
+                              className="p-2.5 rounded-xl text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-all active:scale-95"
+                              title="Edit Product"
+                            >
+                              <Edit size={18} />
+                            </button>
+                            <button
+                              onClick={() => deleteProduct(product._id)}
+                              className="p-2.5 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 transition-all active:scale-95"
+                              title="Delete Product"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {products.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-sans font-bold text-sm uppercase tracking-widest">
+                          No products found. Start by adding one.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
                 </table>
               )}
             </div>
@@ -1811,118 +1811,118 @@ const AdminDashboard = () => {
               <>
                 <div className="bg-white rounded-xl shadow-xl border border-brand-surface-normal overflow-hidden overflow-x-auto p-4">
                   <table className="w-full text-left min-w-[1000px]">
-                <thead className="bg-brand-surface-low border-b border-brand-surface-normal">
-                  <tr>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tl-2xl">Order ID & Date</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Customer</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Items</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Address</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Total & Payment</th>
-                    <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tr-2xl">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-brand-surface-normal">
-                  {filteredOrders.slice((orderCurrentPage - 1) * 20, orderCurrentPage * 20).map((order) => (
-                    <tr
-                      key={order._id}
-                      onClick={() => {
-                        setViewingOrderId(order._id);
-                        setActiveTab('order-details');
-                      }}
-                      className="hover:bg-brand-surface-low/50 transition-colors align-top group cursor-pointer"
-                    >
-                      <td className="px-6 py-6">
-                        <div className="flex flex-col gap-1">
-                          <span className="font-mono text-sm font-bold text-brand-primary">#{orderNumberMap.get(order._id)}</span>
-                          <span className="text-xs font-sans font-bold text-brand-on-surface-variant opacity-60">{new Date(order.createdAt).toLocaleString()}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-h font-bold text-brand-on-surface">{order.shippingAddress?.name || 'N/A'}</span>
-                          <span className="text-xs font-sans font-bold text-brand-on-surface-variant opacity-60">{order.user?.phone || 'N/A'}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="space-y-3">
-                          {order.items.map((item: any, idx: number) => (
-                            <div key={idx} className="flex items-center gap-3 bg-brand-surface-low p-2 rounded-xl border border-brand-surface-normal group-hover:bg-white transition-colors">
-                              <img src={item.image} className="w-10 h-10 object-cover rounded-lg bg-white" alt={item.name} />
-                              <div className="min-w-0">
-                                <p className="text-xs font-h font-bold line-clamp-1">{item.name}</p>
-                                <p className="text-[10px] font-sans font-bold text-brand-on-surface-variant opacity-60 mt-0.5">Size: {item.size} × {item.quantity}</p>
-                              </div>
+                    <thead className="bg-brand-surface-low border-b border-brand-surface-normal">
+                      <tr>
+                        <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tl-2xl">Order ID & Date</th>
+                        <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Customer</th>
+                        <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Items</th>
+                        <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Address</th>
+                        <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60">Total & Payment</th>
+                        <th className="px-6 py-2.5 font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 rounded-tr-2xl">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-brand-surface-normal">
+                      {filteredOrders.slice((orderCurrentPage - 1) * 20, orderCurrentPage * 20).map((order) => (
+                        <tr
+                          key={order._id}
+                          onClick={() => {
+                            setViewingOrderId(order._id);
+                            setActiveTab('order-details');
+                          }}
+                          className="hover:bg-brand-surface-low/50 transition-colors align-top group cursor-pointer"
+                        >
+                          <td className="px-6 py-6">
+                            <div className="flex flex-col gap-1">
+                              <span className="font-mono text-sm font-bold text-brand-primary">#{orderNumberMap.get(order._id)}</span>
+                              <span className="text-xs font-sans font-bold text-brand-on-surface-variant opacity-60">{new Date(order.createdAt).toLocaleString()}</span>
                             </div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="text-xs font-sans text-brand-on-surface max-w-[200px] leading-relaxed">
-                          <p className="font-bold text-brand-on-surface">{order.shippingAddress?.locality}</p>
-                          <p className="text-brand-on-surface-variant opacity-80">{order.shippingAddress?.address}</p>
-                          <p className="text-brand-on-surface-variant opacity-80">{order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}</p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="flex flex-col gap-1.5">
-                          <span className="text-base font-bold text-brand-on-surface">₹{order.totalAmount}</span>
-                          <span className={cn(
-                            "text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-md inline-block w-max",
-                            order.paymentMethod === 'cod' ? "bg-orange-50 text-orange-600" : "bg-green-50 text-green-600"
-                          )}>
-                            {order.paymentMethod === 'cod' ? 'CASH ON DELIVERY' : 'ONLINE PAID'}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="flex flex-col gap-3">
-                          <span className={cn(
-                            "text-xs font-bold px-4 py-2 rounded-xl border w-max",
-                            order.status === 'Processing' ? "bg-blue-50 text-blue-600 border-blue-200" :
-                              order.status === 'Shipped' ? "bg-amber-50 text-amber-600 border-amber-200" :
-                                order.status === 'Delivered' ? "bg-green-50 text-green-600 border-green-200" :
-                                  "bg-red-50 text-red-600 border-red-200"
-                          )}>
-                            {order.status === 'Processing' ? '⏳ Processing' :
-                              order.status === 'Shipped' ? '🚚 Shipped' :
-                                order.status === 'Delivered' ? '✅ Delivered' :
-                                  '❌ Cancelled'}
-                          </span>
-                          {order.trackingId && (
-                            <div className="text-[10px] font-sans font-bold text-brand-on-surface-variant opacity-80 uppercase tracking-widest">
-                              Track ID: <span className="text-brand-on-surface">{order.trackingId}</span>
+                          </td>
+                          <td className="px-6 py-6">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-sm font-h font-bold text-brand-on-surface">{order.shippingAddress?.name || 'N/A'}</span>
+                              <span className="text-xs font-sans font-bold text-brand-on-surface-variant opacity-60">{order.user?.phone || 'N/A'}</span>
                             </div>
-                          )}
-                          <span className="text-[10px] text-brand-primary font-bold hover:underline mt-2">View Details &rarr;</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                          <td className="px-6 py-6">
+                            <div className="space-y-3">
+                              {order.items.map((item: any, idx: number) => (
+                                <div key={idx} className="flex items-center gap-3 bg-brand-surface-low p-2 rounded-xl border border-brand-surface-normal group-hover:bg-white transition-colors">
+                                  <img src={item.image} className="w-10 h-10 object-cover rounded-lg bg-white" alt={item.name} />
+                                  <div className="min-w-0">
+                                    <p className="text-xs font-h font-bold line-clamp-1">{item.name}</p>
+                                    <p className="text-[10px] font-sans font-bold text-brand-on-surface-variant opacity-60 mt-0.5">Size: {item.size} × {item.quantity}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-6 py-6">
+                            <div className="text-xs font-sans text-brand-on-surface max-w-[200px] leading-relaxed">
+                              <p className="font-bold text-brand-on-surface">{order.shippingAddress?.locality}</p>
+                              <p className="text-brand-on-surface-variant opacity-80">{order.shippingAddress?.address}</p>
+                              <p className="text-brand-on-surface-variant opacity-80">{order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}</p>
+                            </div>
+                          </td>
+                          <td className="px-6 py-6">
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-base font-bold text-brand-on-surface">₹{order.totalAmount}</span>
+                              <span className={cn(
+                                "text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-md inline-block w-max",
+                                order.paymentMethod === 'cod' ? "bg-orange-50 text-orange-600" : "bg-green-50 text-green-600"
+                              )}>
+                                {order.paymentMethod === 'cod' ? 'CASH ON DELIVERY' : 'ONLINE PAID'}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-6">
+                            <div className="flex flex-col gap-3">
+                              <span className={cn(
+                                "text-xs font-bold px-4 py-2 rounded-xl border w-max",
+                                order.status === 'Processing' ? "bg-blue-50 text-blue-600 border-blue-200" :
+                                  order.status === 'Shipped' ? "bg-amber-50 text-amber-600 border-amber-200" :
+                                    order.status === 'Delivered' ? "bg-green-50 text-green-600 border-green-200" :
+                                      "bg-red-50 text-red-600 border-red-200"
+                              )}>
+                                {order.status === 'Processing' ? '⏳ Processing' :
+                                  order.status === 'Shipped' ? '🚚 Shipped' :
+                                    order.status === 'Delivered' ? '✅ Delivered' :
+                                      '❌ Cancelled'}
+                              </span>
+                              {order.trackingId && (
+                                <div className="text-[10px] font-sans font-bold text-brand-on-surface-variant opacity-80 uppercase tracking-widest">
+                                  Track ID: <span className="text-brand-on-surface">{order.trackingId}</span>
+                                </div>
+                              )}
+                              <span className="text-[10px] text-brand-primary font-bold hover:underline mt-2">View Details &rarr;</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-            {filteredOrders.length > 20 && (
-              <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-brand-surface-normal">
-                <button
-                  onClick={() => setOrderCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={orderCurrentPage === 1}
-                  className="px-4 py-2 bg-brand-surface rounded-lg disabled:opacity-50 text-sm font-bold text-brand-on-surface hover:bg-brand-surface-normal transition-colors"
-                >
-                  &larr; Previous
-                </button>
-                <span className="text-sm font-bold text-brand-on-surface-variant opacity-80">
-                  Page {orderCurrentPage} of {Math.ceil(filteredOrders.length / 20)}
-                </span>
-                <button
-                  onClick={() => setOrderCurrentPage(p => Math.min(Math.ceil(filteredOrders.length / 20), p + 1))}
-                  disabled={orderCurrentPage >= Math.ceil(filteredOrders.length / 20)}
-                  className="px-4 py-2 bg-brand-surface rounded-lg disabled:opacity-50 text-sm font-bold text-brand-on-surface hover:bg-brand-surface-normal transition-colors"
-                >
-                  Next &rarr;
-                </button>
-              </div>
-            )}
+                {filteredOrders.length > 20 && (
+                  <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-brand-surface-normal">
+                    <button
+                      onClick={() => setOrderCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={orderCurrentPage === 1}
+                      className="px-4 py-2 bg-brand-surface rounded-lg disabled:opacity-50 text-sm font-bold text-brand-on-surface hover:bg-brand-surface-normal transition-colors"
+                    >
+                      &larr; Previous
+                    </button>
+                    <span className="text-sm font-bold text-brand-on-surface-variant opacity-80">
+                      Page {orderCurrentPage} of {Math.ceil(filteredOrders.length / 20)}
+                    </span>
+                    <button
+                      onClick={() => setOrderCurrentPage(p => Math.min(Math.ceil(filteredOrders.length / 20), p + 1))}
+                      disabled={orderCurrentPage >= Math.ceil(filteredOrders.length / 20)}
+                      className="px-4 py-2 bg-brand-surface rounded-lg disabled:opacity-50 text-sm font-bold text-brand-on-surface hover:bg-brand-surface-normal transition-colors"
+                    >
+                      Next &rarr;
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -2077,18 +2077,31 @@ const AdminDashboard = () => {
                       <p className="font-sans font-bold text-sm text-brand-on-surface">{order.shippingAddress?.name || 'N/A'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-widest font-bold text-brand-on-surface-variant opacity-60 mb-0.5">Phone</p>
-                      <p className="font-sans font-bold text-sm text-brand-on-surface">{order.shippingAddress?.phone || order.user?.phone || 'N/A'}</p>
+                      <p className="text-[10px] uppercase tracking-widest font-bold text-brand-on-surface-variant opacity-60 mb-0.5">Address</p>
+                      <p className="font-sans font-bold text-sm text-brand-on-surface">{order.shippingAddress?.address || 'N/A'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-widest font-bold text-brand-on-surface-variant opacity-60 mb-0.5">Shipping Address</p>
-                      <p className="font-sans font-bold text-sm text-brand-on-surface leading-relaxed mt-1">
-                        {order.shippingAddress?.locality}<br />
-                        {order.shippingAddress?.address}<br />
-                        {order.shippingAddress?.city}, {order.shippingAddress?.state}<br />
-                        {order.shippingAddress?.pincode}
-                      </p>
+                      <p className="text-[10px] uppercase tracking-widest font-bold text-brand-on-surface-variant opacity-60 mb-0.5">Post Name</p>
+                      <p className="font-sans font-bold text-sm text-brand-on-surface">{order.shippingAddress?.locality || 'N/A'}</p>
                     </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest font-bold text-brand-on-surface-variant opacity-60 mb-0.5">Place</p>
+                      <p className="font-sans font-bold text-sm text-brand-on-surface">{order.shippingAddress?.city}{order.shippingAddress?.state ? `, ${order.shippingAddress?.state}` : ''}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest font-bold text-brand-on-surface-variant opacity-60 mb-0.5">Pin Code</p>
+                      <p className="font-sans font-bold text-sm text-brand-on-surface">{order.shippingAddress?.pincode || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest font-bold text-brand-on-surface-variant opacity-60 mb-0.5">Mobile Number</p>
+                      <p className="font-sans font-bold text-sm text-brand-on-surface">{order.shippingAddress?.phone || order.user?.phone || 'N/A'}</p>
+                    </div>
+                    {order.shippingAddress?.alternatePhone && (
+                      <div>
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-brand-on-surface-variant opacity-60 mb-0.5">Mobile Number 2</p>
+                        <p className="font-sans font-bold text-sm text-brand-on-surface">{order.shippingAddress?.alternatePhone}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

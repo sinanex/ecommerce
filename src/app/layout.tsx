@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     default: '6YARD | Buy Football Jerseys Online in India',
     template: '%s | 6YARD',
   },
-  description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories. Based in Manjeri, Malappuram, Kerala. Fast delivery across India.',
-  keywords: ['football jerseys India', 'buy football jersey online', 'club jerseys', 'national team jerseys', 'football kits', 'retro football jerseys', 'sports accessories', 'football store Kerala', 'football jersey Manjeri', 'football jersey Malappuram', '6YARD'],
+  description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories. Your premium online football store with complete delivery across India.',
+  keywords: ['football jerseys India', 'buy football jersey online', 'club jerseys', 'national team jerseys', 'football kits', 'retro football jerseys', 'sports accessories', 'online football store India', 'football jersey online shopping', '6YARD'],
   openGraph: {
     title: '6YARD | Buy Football Jerseys Online in India',
     description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories.',
@@ -82,13 +82,7 @@ export default function RootLayout({
                 "name": "6YARD",
                 "url": "https://6yardjersey.com",
                 "logo": "https://6yardjersey.com/logo.png",
-                "description": "Premium football jerseys and sports accessories based in Manjeri, Kerala.",
-                "address": {
-                  "@type": "PostalAddress",
-                  "addressLocality": "Manjeri, Malappuram",
-                  "addressRegion": "Kerala",
-                  "addressCountry": "IN"
-                }
+                "description": "Premium online football jersey store serving all of India."
               },
               {
                 "@context": "https://schema.org",

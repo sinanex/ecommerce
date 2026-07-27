@@ -35,7 +35,6 @@ interface SavedAddress {
   locality: string;
   address: string;
   city: string;
-  state: string;
   country: string;
   alternatePhone?: string;
 }
@@ -154,7 +153,6 @@ export default function CheckoutWizard() {
       locality: vals.locality || '',
       address: vals.address || '',
       city: vals.city || '',
-      state: 'Kerala',
       country: 'India'
     };
   };
@@ -198,7 +196,6 @@ export default function CheckoutWizard() {
                 locality: activeAddress?.locality || 'Locality',
                 address: activeAddress?.address || '123 Test Street',
                 city: activeAddress?.city || 'City',
-                state: activeAddress?.state || 'Kerala',
                 country: activeAddress?.country || 'India'
               },
               paymentMethod: paymentMethod,
@@ -278,7 +275,6 @@ export default function CheckoutWizard() {
                   locality: activeAddress?.locality || 'Locality',
                   address: activeAddress?.address || '123 Test Street',
                   city: activeAddress?.city || 'City',
-                  state: activeAddress?.state || 'Kerala',
                   country: activeAddress?.country || 'India'
                 },
                 paymentMethod: paymentMethod,

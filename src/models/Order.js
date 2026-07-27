@@ -36,7 +36,4 @@ const orderSchema = new mongoose.Schema({
   orderDate: { type: Date, default: Date.now }
 }, { timestamps: true });
 
-if (mongoose.models.Order) {
-  delete mongoose.models.Order;
-}
 module.exports = mongoose.models.Order || mongoose.model('Order', orderSchema);

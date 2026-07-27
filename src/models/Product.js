@@ -33,5 +33,4 @@ const productSchema = new mongoose.Schema({
   }]
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
-delete mongoose.models.Product;
 module.exports = mongoose.models.Product || mongoose.model('Product', productSchema);

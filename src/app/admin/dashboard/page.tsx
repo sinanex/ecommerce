@@ -969,15 +969,15 @@ const AdminDashboard = () => {
     switch (activeTab) {
       case 'dashboard': {
         // --- Derived Analytics ---
-        const totalSales = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+        const totalSales = orders.reduce((sum, o) => sum + (o.subtotal || o.totalAmount || 0), 0);
         const deliveredOrders = orders.filter(o => o.status === 'Delivered');
         const processingOrders = orders.filter(o => o.status === 'Processing');
         const shippedOrders = orders.filter(o => o.status === 'Shipped');
         const cancelledOrders = orders.filter(o => o.status === 'Cancelled');
         const codOrders = orders.filter(o => o.paymentMethod === 'cod');
         const onlineOrders = orders.filter(o => o.paymentMethod !== 'cod');
-        const codRevenue = codOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
-        const onlineRevenue = onlineOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
+        const codRevenue = codOrders.reduce((s, o) => s + (o.subtotal || o.totalAmount || 0), 0);
+        const onlineRevenue = onlineOrders.reduce((s, o) => s + (o.subtotal || o.totalAmount || 0), 0);
 
         // Weekly bar chart data (last 7 days)
         const weeklyData = Array.from({ length: 7 }, (_, i) => {
@@ -986,7 +986,7 @@ const AdminDashboard = () => {
           const dayStr = d.toLocaleDateString('en-US', { weekday: 'short' });
           const dateStr = d.toISOString().split('T')[0];
           const dayOrders = orders.filter(o => o.createdAt && o.createdAt.startsWith(dateStr));
-          const daySales = dayOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
+          const daySales = dayOrders.reduce((s, o) => s + (o.subtotal || o.totalAmount || 0), 0);
           return { day: dayStr, sales: daySales, orders: dayOrders.length };
         });
 
@@ -1883,7 +1883,7 @@ const AdminDashboard = () => {
                           </td>
                           <td className="px-6 py-6">
                             <div className="flex flex-col gap-1.5">
-                              <span className="text-base font-bold text-brand-on-surface">₹{order.totalAmount}</span>
+                              <span className="text-base font-bold text-brand-on-surface">₹{(order.subtotal || order.totalAmount)}</span>
                               <span className={cn(
                                 "text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-md inline-block w-max",
                                 order.paymentMethod === 'cod' ? "bg-orange-50 text-orange-600" : "bg-green-50 text-green-600"
@@ -2075,17 +2075,19 @@ const AdminDashboard = () => {
                   </div>
                   <div className="divide-y divide-brand-surface-normal">
                     {order.items.map((item: any, idx: number) => (
-                      <div key={idx} className="p-4 flex gap-4 items-center hover:bg-brand-surface-low/30 transition-colors">
-                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg bg-brand-surface-normal" />
-                        <div className="flex-1">
-                          <h4 className="font-h font-bold text-brand-on-surface">{item.name}</h4>
-                          <div className="flex gap-3 mt-1 text-xs font-bold text-brand-on-surface-variant opacity-80">
-                            <span>Size: {item.size}</span>
-                            <span>Qty: {item.quantity}</span>
+                      <div key={idx} className="p-4 flex gap-4 hover:bg-brand-surface-low/30 transition-colors">
+                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg bg-brand-surface-normal shrink-0" />
+                        <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 min-w-0">
+                          <div className="min-w-0">
+                            <h4 className="font-h font-bold text-brand-on-surface leading-tight">{item.name}</h4>
+                            <div className="flex gap-3 mt-1 text-[10px] sm:text-xs font-bold text-brand-on-surface-variant opacity-80">
+                              <span>Size: {item.size}</span>
+                              <span>Qty: {item.quantity}</span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="text-right font-h font-bold text-brand-on-surface">
-                          ₹{item.price * item.quantity}
+                          <div className="sm:text-right font-h font-bold text-brand-on-surface shrink-0">
+                            ₹{item.price * item.quantity}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -2138,7 +2140,7 @@ const AdminDashboard = () => {
                   <div className="space-y-3 font-sans font-bold text-sm">
                     <div className="flex justify-between text-brand-on-surface-variant opacity-80">
                       <span>Subtotal</span>
-                      <span>₹{order.totalAmount}</span>
+                      <span>₹{(order.subtotal || order.totalAmount)}</span>
                     </div>
                     <div className="flex justify-between text-brand-on-surface-variant opacity-80">
                       <span>Method</span>
@@ -2146,9 +2148,15 @@ const AdminDashboard = () => {
                         {order.paymentMethod === 'cod' ? 'CASH ON DELIVERY' : 'ONLINE PAID'}
                       </span>
                     </div>
+                    {order.paymentMethod === 'cod' && (
+                      <div className="flex justify-between text-orange-600">
+                        <span>Advance Paid</span>
+                        <span>₹{order.advancePaid || 50}</span>
+                      </div>
+                    )}
                     <div className="pt-3 border-t border-brand-surface-normal flex justify-between text-base text-brand-on-surface">
                       <span>Total</span>
-                      <span>₹{order.totalAmount}</span>
+                      <span>₹{(order.subtotal || order.totalAmount)}</span>
                     </div>
                   </div>
                 </div>

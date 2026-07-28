@@ -20,7 +20,6 @@ const orderSchema = new mongoose.Schema({
     locality: { type: String, required: true },
     address: { type: String, required: true },
     city: { type: String, required: true },
-    state: { type: String, required: true },
     landmark: { type: String },
     alternatePhone: { type: String },
     addressType: { type: String }
@@ -36,5 +35,5 @@ const orderSchema = new mongoose.Schema({
   trackingId: { type: String },
   orderDate: { type: Date, default: Date.now }
 }, { timestamps: true });
-
-module.exports = mongoose.models.Order || mongoose.model('Order', orderSchema);
+delete mongoose.models.Order;
+module.exports = mongoose.model('Order', orderSchema);

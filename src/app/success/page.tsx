@@ -137,12 +137,17 @@ export default function Success() {
             Thank you for your order!
           </motion.h1>
 
-          <motion.p
+          <motion.div
             variants={itemVariants}
-            className="font-sans text-brand-on-surface-variant text-lg mb-12 max-w-lg"
+            className="font-sans text-brand-on-surface-variant text-lg mb-12 max-w-lg flex flex-col items-center gap-2"
           >
-            Your order has been successfully placed.
-          </motion.p>
+            <p>Your order has been successfully placed.</p>
+            {order.paymentMethod === 'cod' && order.advancePaid > 0 && (
+              <p className="text-brand-primary font-medium bg-brand-surface-low px-4 py-3 border border-brand-primary/20 rounded-xl text-sm">
+                Remaining amount to pay upon delivery: <strong>₹{(Number(order.totalAmount) - Number(order.advancePaid)).toLocaleString('en-IN')}</strong>
+              </p>
+            )}
+          </motion.div>
 
           <motion.div
             variants={itemVariants}
@@ -158,7 +163,7 @@ export default function Success() {
                   Order ID
                 </p>
                 <p className="font-h text-lg font-bold">
-                  {order._id?.slice(-8).toUpperCase()}
+                  #{order.orderNumber || order._id?.slice(-4).padStart(4, '0')}
                 </p>
               </div>
 

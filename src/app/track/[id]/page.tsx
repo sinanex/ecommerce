@@ -109,7 +109,7 @@ export default function TrackOrder() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
               <div>
                 <p className="font-sans font-black text-xs uppercase tracking-widest text-brand-on-surface-variant opacity-60 mb-2">Order ID</p>
-                <p className="font-h text-xl font-bold text-brand-on-surface">{order._id?.slice(-8).toUpperCase()}</p>
+                <p className="font-h text-xl font-bold text-brand-on-surface">#{order.orderNumber || order._id?.slice(-4).padStart(4, '0')}</p>
               </div>
 
               <div>
@@ -126,13 +126,20 @@ export default function TrackOrder() {
               
               <div>
                 <p className="font-sans font-black text-xs uppercase tracking-widest text-brand-on-surface-variant opacity-60 mb-2">Total Amount</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <p className="font-h text-xl font-bold text-brand-primary">
-                    ₹{order.paymentMethod === 'cod' ? (order.totalAmount - (order.advancePaid || 60)).toFixed(2) : order.totalAmount?.toFixed(2)}
-                  </p>
-                  <span className="text-[10px] uppercase font-black tracking-widest bg-brand-surface-low px-2 py-1 rounded-md text-brand-on-surface-variant opacity-80 border border-brand-surface-normal">
-                    {order.paymentMethod === 'cod' ? 'COD' : 'Paid'}
-                  </span>
+                <div className="flex flex-col gap-1 mt-0.5">
+                  <div className="flex items-center gap-2">
+                    <p className="font-h text-xl font-bold text-brand-primary">
+                      ₹{(order.subtotal || order.totalAmount)?.toFixed(2)}
+                    </p>
+                    <span className="text-[10px] uppercase font-black tracking-widest bg-brand-surface-low px-2 py-1 rounded-md text-brand-on-surface-variant opacity-80 border border-brand-surface-normal">
+                      {order.paymentMethod === 'cod' ? 'COD' : 'Paid'}
+                    </span>
+                  </div>
+                  {order.paymentMethod === 'cod' && (
+                    <p className="font-sans text-[10px] font-black text-orange-600 uppercase tracking-widest">
+                      Advance Paid: ₹{order.advancePaid || 50}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -155,20 +162,22 @@ export default function TrackOrder() {
             <h3 className="font-h text-2xl font-bold mb-8">Items in Order</h3>
             <div className="space-y-4">
               {order.items?.map((item: any, idx: number) => (
-                <div key={idx} className="flex gap-5 items-center p-4 bg-brand-surface-low rounded-2xl border border-brand-surface-normal">
+                <div key={idx} className="flex gap-4 p-4 bg-brand-surface-low rounded-2xl border border-brand-surface-normal">
                   <div className="w-20 h-24 bg-white rounded-xl overflow-hidden shrink-0 shadow-sm border border-brand-surface-normal/50">
                     {item.image ? (
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">No Image</div>
                     )}
                   </div>
-                  <div className="flex-grow">
-                    <h4 className="font-h text-lg font-bold text-brand-on-surface">{item.name}</h4>
-                    <p className="font-sans text-xs uppercase tracking-widest font-black text-brand-on-surface-variant opacity-60 mt-1">Size: {item.size} • Qty: {item.quantity}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-h font-black text-xl text-brand-primary">₹{(item.price * item.quantity).toFixed(2)}</p>
+                  <div className="flex-grow flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 min-w-0">
+                    <div className="min-w-0">
+                      <h4 className="font-h text-base md:text-lg font-bold text-brand-on-surface leading-tight">{item.name}</h4>
+                      <p className="font-sans text-[10px] sm:text-xs uppercase tracking-widest font-black text-brand-on-surface-variant opacity-60 mt-1">Size: {item.size} • Qty: {item.quantity}</p>
+                    </div>
+                    <div className="sm:text-right shrink-0">
+                      <p className="font-h font-black text-lg md:text-xl text-brand-primary">₹{(item.price * item.quantity).toFixed(2)}</p>
+                    </div>
                   </div>
                 </div>
               ))}

@@ -18,7 +18,12 @@ export async function GET(
       return NextResponse.json({ message: 'Order not found' }, { status: 404 });
     }
     
-    return NextResponse.json(order);
+    const orderNum = await (Order as any).countDocuments({ _id: { $lte: order._id } });
+    
+    return NextResponse.json({
+      ...order.toObject(),
+      orderNumber: String(orderNum).padStart(4, '0')
+    });
   } catch (error: any) {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }

@@ -162,8 +162,8 @@ export default function CheckoutWizard() {
     setPaymentError(null);
 
     const activeAddress = getActiveAddress();
-    const finalAmount = paymentMethod === 'cod' ? 60 : totalAmount;
-    const finalTotalAmount = paymentMethod === 'cod' ? totalAmount + 60 : totalAmount;
+    const finalAmount = paymentMethod === 'cod' ? 50 : totalAmount;
+    const finalTotalAmount = totalAmount;
 
     const loaded = await loadRazorpay();
     const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '';
@@ -200,7 +200,7 @@ export default function CheckoutWizard() {
               },
               paymentMethod: paymentMethod,
               totalAmount: finalTotalAmount,
-              shippingCharge: paymentMethod === 'cod' ? 60 : 0,
+              shippingCharge: paymentMethod === 'cod' ? 50 : 0,
               subtotal: totalAmount,
               razorpayPaymentId: 'pay_mock_' + Math.random().toString(36).substr(2, 9),
               razorpayOrderId: 'order_mock_' + Math.random().toString(36).substr(2, 9),
@@ -279,7 +279,7 @@ export default function CheckoutWizard() {
                 },
                 paymentMethod: paymentMethod,
                 totalAmount: finalTotalAmount,
-                shippingCharge: paymentMethod === 'cod' ? 60 : 0,
+                shippingCharge: paymentMethod === 'cod' ? 50 : 0,
                 subtotal: totalAmount,
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpayOrderId: response.razorpay_order_id,
@@ -521,7 +521,7 @@ export default function CheckoutWizard() {
                     <span className="text-lg">🚚</span> Cash on Delivery
                   </h5>
                   <p className="text-brand-on-surface-variant leading-relaxed">
-                    For COD orders, <span className="font-bold text-brand-on-surface">₹60 extra charge</span> including shipping is required for order confirmation ✅
+                    For COD orders, <span className="font-bold text-brand-on-surface">₹50 extra charge</span> including shipping is required for order confirmation ✅
                   </p>
                 </button>
               </div>
@@ -572,7 +572,7 @@ export default function CheckoutWizard() {
               className="px-10 py-4.5 bg-black hover:bg-gray-900 text-white rounded-2xl font-sans font-black text-sm uppercase tracking-widest transition-all cursor-pointer flex items-center gap-3 shadow-xl"
             >
               <Lock size={16} />
-              {paymentMethod === 'cod' ? 'Pay Advance Securely (₹60.00)' : `Pay Securely (₹${totalAmount.toFixed(2)})`}
+              {paymentMethod === 'cod' ? 'Pay Advance Securely (₹50.00)' : `Pay Securely (₹${totalAmount.toFixed(2)})`}
             </button>
           )}
         </div>
@@ -608,7 +608,7 @@ export default function CheckoutWizard() {
             {paymentMethod === 'cod' && (
               <div className="flex justify-between items-center text-brand-primary font-bold">
                 <span>Advance COD Charge (Shipping + Fee)</span>
-                <span>₹60.00</span>
+                <span>₹50.00</span>
               </div>
             )}
             {paymentMethod === 'online' && (
@@ -621,7 +621,7 @@ export default function CheckoutWizard() {
             <div className="flex justify-between items-center pt-2">
               <span className="font-h text-sm font-bold uppercase tracking-wider text-brand-on-surface">Total Amount to Pay Now</span>
               <span className="font-h text-xl font-black text-brand-primary">
-                ₹{paymentMethod === 'cod' ? '60.00' : totalAmount.toFixed(2)}
+                ₹{paymentMethod === 'cod' ? '50.00' : totalAmount.toFixed(2)}
               </span>
             </div>
             {paymentMethod === 'cod' && (

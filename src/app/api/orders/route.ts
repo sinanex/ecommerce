@@ -71,7 +71,13 @@ export async function POST(req: NextRequest) {
 
     await (User as any).findByIdAndUpdate(auth.user.userId, { $set: { cart: [] } });
 
-    return NextResponse.json(savedOrder, { status: 201 });
+    const orderNum = await (Order as any).countDocuments({ _id: { $lte: savedOrder._id } });
+    const orderWithNum = {
+      ...savedOrder.toObject(),
+      orderNumber: String(orderNum).padStart(4, '0')
+    };
+
+    return NextResponse.json(orderWithNum, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ message: error.message }, { status: 400 });
   }

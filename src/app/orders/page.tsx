@@ -167,8 +167,7 @@ export default function Orders() {
               const itemsCount = order.items?.length || 0;
               const dateObj = new Date(order.createdAt);
               const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-              const originalIdx = orders.findIndex(o => o._id === order._id);
-              const orderNum = String(orders.length - originalIdx).padStart(4, '0');
+              const orderNum = order.orderNumber || order._id.slice(-4).padStart(4, '0');
 
               return (
                 <motion.section
@@ -227,11 +226,21 @@ export default function Orders() {
                           </a>
                         ) : null}
                       </div>
-                      <div className="sm:text-right flex items-baseline justify-between sm:justify-end gap-3 w-full sm:w-auto">
-                        <span className="font-sans text-xs text-brand-on-surface-variant opacity-60">Total Amount:</span>
-                        <span className="font-h text-2xl font-black text-brand-on-surface">
-                          ₹{order.totalAmount?.toFixed(2)}
-                        </span>
+                      <div className="sm:text-right flex flex-col items-end w-full sm:w-auto">
+                        <div className="flex items-baseline justify-between sm:justify-end gap-3 w-full">
+                          <span className="font-sans text-xs text-brand-on-surface-variant opacity-60">Total Amount:</span>
+                          <span className="font-h text-2xl font-black text-brand-on-surface">
+                            ₹{(order.subtotal || order.totalAmount)?.toFixed(2)}
+                          </span>
+                        </div>
+                        {order.paymentMethod === 'cod' && (
+                          <div className="flex items-center justify-between sm:justify-end gap-2 w-full mt-1">
+                            <span className="font-sans text-[10px] text-orange-600 font-bold uppercase tracking-widest">Advance Paid:</span>
+                            <span className="font-h text-sm font-black text-orange-600">
+                              ₹{order.advancePaid || 50}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Link>

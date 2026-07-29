@@ -59,9 +59,10 @@ function CheckoutContent() {
   // Compute dynamic shipping and total
   const totalQuantity = cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
   const baseShippingCharge = settings?.codDeliveryAmount || 50;
-  const shippingCharge = totalQuantity > 0 ? Math.ceil(totalQuantity / 2) * baseShippingCharge : 0;
+  const calculatedCodCharge = totalQuantity > 0 ? Math.ceil(totalQuantity / 2) * baseShippingCharge : 0;
 
   const isCod = paymentMethod === 'cod';
+  const shippingCharge = isCod ? calculatedCodCharge : 0;
   const dynamicTotal = summary.subtotal + shippingCharge;
   const payableAmount = isCod ? shippingCharge : dynamicTotal;
 
@@ -308,7 +309,9 @@ function CheckoutContent() {
               </div>
               <div className="flex justify-between text-sm text-brand-on-surface-variant">
                 <span>Shipping</span>
-                <span className="font-bold text-brand-on-surface">₹{shippingCharge.toFixed(0)}</span>
+                <span className="font-bold text-brand-on-surface">
+                  {shippingCharge === 0 ? <span className="text-green-600">Free</span> : `₹${shippingCharge.toFixed(0)}`}
+                </span>
               </div>
               <div className="flex justify-between text-base font-bold mt-2 pt-2 border-t border-brand-surface-normal border-dashed text-brand-on-surface">
                 <span>Total Amount</span>
@@ -319,15 +322,16 @@ function CheckoutContent() {
 
           {/* Step 3: Payment Method */}
           <section className="bg-white py-4 md:p-6 sm:rounded-2xl sm:border border-brand-surface-normal sm:shadow-sm">
+
             <h2 className="font-sans text-brand-on-surface-variant text-sm font-bold mb-4 px-4 md:px-0">Payment Methods</h2>
 
             <div className="border-y sm:border border-brand-surface-normal sm:rounded-xl overflow-hidden bg-white">
               {[
-                { id: 'cod', amount: shippingCharge, title: `COD Partial Payment (Pay ₹${(dynamicTotal - shippingCharge).toFixed(0)} on delivery)` },
-                { id: 'upi', amount: dynamicTotal, title: 'Pay via UPI' },
-                { id: 'cards', amount: dynamicTotal, title: 'Pay via Debit/Credit cards' },
-                { id: 'wallets', amount: dynamicTotal, title: 'Pay via Wallets' },
-                { id: 'netbanking', amount: dynamicTotal, title: 'Pay via NetBanking' },
+                { id: 'cod', amount: calculatedCodCharge, title: `COD Partial Payment (Pay ₹${summary.subtotal.toFixed(0)} on delivery)` },
+                { id: 'upi', amount: summary.subtotal, title: 'Pay via UPI' },
+                { id: 'cards', amount: summary.subtotal, title: 'Pay via Debit/Credit cards' },
+                { id: 'wallets', amount: summary.subtotal, title: 'Pay via Wallets' },
+                { id: 'netbanking', amount: summary.subtotal, title: 'Pay via NetBanking' },
               ].map((method, index) => (
                 <div
                   key={method.id}

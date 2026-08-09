@@ -261,33 +261,39 @@ const AdminDashboard = () => {
   const [cloudinaryUsage, setCloudinaryUsage] = useState<any>(null);
 
   // Multi-Product Form State
-  const initialProductState = {
-    name: '',
-    description: '',
-    brand: '',
-    team: '',
-    category: [],
-    subcategory: '',
-    price: '',
-    discount_price: '',
-    stock: '',
-    isAvailable: true,
-    sizes: '',
-    sizeStocks: [
-      { size: 'S', stock: '' },
-      { size: 'M', stock: '' },
-      { size: 'L', stock: '' },
-      { size: 'XL', stock: '' },
-      { size: 'XXL', stock: '' }
-    ],
-    salesTag: '',
-    colors: '',
-    customNameNumber: false,
-    tempImages: Array(5).fill(null), // Store 5 slots (Main Image + 4 Sub Images)
-    existingImages: Array(5).fill(null)
+  const getInitialProductState = () => {
+    const configuredSizes = settings.sizes && settings.sizes.length > 0
+      ? settings.sizes.map((size: string) => ({ size, stock: '' }))
+      : [
+          { size: 'S', stock: '' },
+          { size: 'M', stock: '' },
+          { size: 'L', stock: '' },
+          { size: 'XL', stock: '' },
+          { size: 'XXL', stock: '' }
+        ];
+
+    return {
+      name: '',
+      description: '',
+      brand: '',
+      team: '',
+      category: [] as string[],
+      subcategory: '',
+      price: '',
+      discount_price: '',
+      stock: '',
+      isAvailable: true,
+      sizes: '',
+      sizeStocks: configuredSizes,
+      salesTag: '',
+      colors: '',
+      customNameNumber: false,
+      tempImages: Array(5).fill(null), // Store 5 slots (Main Image + 4 Sub Images)
+      existingImages: Array(5).fill(null)
+    };
   };
 
-  const [productForms, setProductForms] = useState([initialProductState]);
+  const [productForms, setProductForms] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [teams, setTeams] = useState<any[]>([]);
@@ -345,8 +351,10 @@ const AdminDashboard = () => {
       const savedOrderId = localStorage.getItem('adminViewingOrderId');
       if (savedOrderId) setViewingOrderId(savedOrderId);
 
+      fetchSettings();
       fetchCategories();
       fetchTeams();
+      setProductForms([getInitialProductState()]);
     }
   }, []);
 
@@ -796,7 +804,7 @@ const AdminDashboard = () => {
             { size: 'XXL', stock: '' }
           ];
       setProductForms([...productForms, {
-        ...initialProductState,
+        ...getInitialProductState(),
         sizeStocks: configuredSizes
       }]);
     }
@@ -892,7 +900,7 @@ const AdminDashboard = () => {
     }
 
     showSnackbar('Success', `Successfully added ${successCount} products!`, 'success');
-    setProductForms([initialProductState]);
+    setProductForms([getInitialProductState()]);
     fetchProducts();
     setActiveTab('orders');
     setLoading(false);
@@ -969,7 +977,7 @@ const AdminDashboard = () => {
         showSnackbar('Success', 'Product updated successfully!', 'success');
         setIsEditMode(false);
         setEditingProductId(null);
-        setProductForms([initialProductState]);
+        setProductForms([getInitialProductState()]);
         fetchProducts();
         setActiveTab('orders');
       } else {
@@ -1467,7 +1475,7 @@ const AdminDashboard = () => {
                     onClick={() => {
                       setIsEditMode(false);
                       setEditingProductId(null);
-                      setProductForms([initialProductState]);
+                      setProductForms([getInitialProductState()]);
                       setActiveTab('all-products');
                     }}
                     className="flex-1 bg-white border border-brand-surface-normal text-brand-on-surface px-8 py-2.5 rounded-lg font-semibold hover:bg-brand-surface-low transition-all shadow-xl hover:shadow-2xl active:scale-95"
@@ -1696,7 +1704,7 @@ const AdminDashboard = () => {
               </div>
               <button
                 onClick={() => {
-                  setProductForms([initialProductState]);
+                  setProductForms([getInitialProductState()]);
                   setIsEditMode(false);
                   setActiveTab('products');
                 }}
@@ -2850,7 +2858,7 @@ const AdminDashboard = () => {
                 key={item.id}
                 onClick={() => {
                   if (item.id === 'products' && !isEditMode) {
-                    setProductForms([initialProductState]);
+                    setProductForms([getInitialProductState()]);
                   }
                   setActiveTab(item.id); setIsMobileMenuOpen(false);
                 }}

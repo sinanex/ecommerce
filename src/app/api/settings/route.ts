@@ -41,7 +41,8 @@ export async function POST(req: NextRequest) {
         'codDeliveryAmount',
         'adminUsername',
         'adminPassword',
-        'salesTags'
+        'salesTags',
+        'sizes'
       ];
 
       updatableFields.forEach(field => {

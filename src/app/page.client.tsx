@@ -226,7 +226,7 @@ export default function HomeClient() {
           <>
             {/* Hero Section */}
             {banners.length > 0 && (
-              <section className="relative h-[55vh] w-full overflow-hidden bg-black md:hidden">
+              <section className="relative h-[55vh] md:h-[65vh] w-full overflow-hidden bg-black">
                 <AnimatePresence mode="popLayout" initial={false}>
                   <motion.div
                     key={currentBannerIndex}

@@ -243,7 +243,8 @@ const AdminDashboard = () => {
     deliveryTimeFrom: 5, deliveryTimeTo: 7,
     codDeliveryAmount: 50,
     adminUsername: '', adminPassword: '',
-    salesTags: [] as { name: string, color: string }[]
+    salesTags: [] as { name: string, color: string }[],
+    sizes: [] as string[]
   });
   const [adminPasswordState, setAdminPasswordState] = useState({ newPassword: '', confirmPassword: '' });
   const [isAdminPasswordModalOpen, setIsAdminPasswordModalOpen] = useState(false);
@@ -297,6 +298,7 @@ const AdminDashboard = () => {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [selectedParentCategoryId, setSelectedParentCategoryId] = useState('');
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
+  const [newSizeInput, setNewSizeInput] = useState('');
   const handleDirectFieldChange = (index, name, value) => {
     const updatedForms = [...productForms];
     if (name === 'category') {
@@ -312,6 +314,24 @@ const AdminDashboard = () => {
       };
     }
     setProductForms(updatedForms);
+  };
+
+  const getAvailableSubcategories = (selectedCategories: any) => {
+    if (!selectedCategories) return [];
+    const categoriesArray = Array.isArray(selectedCategories)
+      ? selectedCategories
+      : typeof selectedCategories === 'string'
+        ? [selectedCategories]
+        : [];
+    if (categoriesArray.length === 0) return [];
+    const subs = new Set<string>();
+    categoriesArray.forEach(catName => {
+      const parent = categories.find(c => c.name === catName);
+      if (parent && parent.subcategories) {
+        parent.subcategories.forEach(sub => subs.add(sub));
+      }
+    });
+    return Array.from(subs);
   };
 
   useEffect(() => {
@@ -641,27 +661,30 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleCreateSubcategory = async (e) => {
-    e.preventDefault();
-    if (!selectedParentCategoryId || !newSubcategoryName.trim()) {
+  const handleCreateSubcategory = async (parentId?: string, subName?: string) => {
+    const activeParentId = parentId || selectedParentCategoryId;
+    const activeSubName = subName || newSubcategoryName;
+
+    if (!activeParentId || !activeSubName.trim()) {
       showSnackbar('Warning', 'Please select a parent category and enter a subcategory name', 'warning');
       return;
     }
 
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${API_BASE_URL}/api/categories/${selectedParentCategoryId}/subcategories`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/${activeParentId}/subcategories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ subcategoryName: newSubcategoryName.trim() })
+        body: JSON.stringify({ subcategoryName: activeSubName.trim() })
       });
 
       const data = await response.json();
       if (response.ok) {
         setNewSubcategoryName('');
+        setSelectedParentCategoryId('');
         fetchCategories();
         showSnackbar('Success', 'Subcategory created successfully!', 'success');
       } else {
@@ -763,9 +786,37 @@ const AdminDashboard = () => {
 
   const addFormRow = () => {
     if (productForms.length < 5) {
-      setProductForms([...productForms, initialProductState]);
+      const configuredSizes = settings.sizes && settings.sizes.length > 0
+        ? settings.sizes.map((size: string) => ({ size, stock: '' }))
+        : [
+            { size: 'S', stock: '' },
+            { size: 'M', stock: '' },
+            { size: 'L', stock: '' },
+            { size: 'XL', stock: '' },
+            { size: 'XXL', stock: '' }
+          ];
+      setProductForms([...productForms, {
+        ...initialProductState,
+        sizeStocks: configuredSizes
+      }]);
     }
   };
+
+  useEffect(() => {
+    if (settings.sizes && settings.sizes.length > 0 && !isEditMode) {
+      setProductForms(prev => {
+        const isFresh = prev.every(row => row.name === '' && row.price === '' && row.sizeStocks.every(s => s.stock === ''));
+        if (isFresh) {
+          const configuredSizes = settings.sizes.map((size: string) => ({ size, stock: '' }));
+          return prev.map(row => ({
+            ...row,
+            sizeStocks: configuredSizes
+          }));
+        }
+        return prev;
+      });
+    }
+  }, [settings.sizes, isEditMode]);
 
   const removeFormRow = (index) => {
     if (productForms.length > 1) {
@@ -1048,7 +1099,7 @@ const AdminDashboard = () => {
                   description: product.description || '',
                   brand: product.brand || '',
                   team: product.team || '',
-                  category: product.category || '',
+                  category: Array.isArray(product.category) ? product.category : (product.category ? [product.category] : []),
                   subcategory: product.subcategory || '',
                   price: product.price || '',
                   discount_price: product.discount_price || '',
@@ -1057,7 +1108,9 @@ const AdminDashboard = () => {
                   sizes: Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes || '',
                   sizeStocks: product.sizeStocks && product.sizeStocks.length > 0
                     ? product.sizeStocks.map((s: any) => ({ size: s.size, stock: s.stock }))
-                    : [{ size: 'S', stock: '' }, { size: 'M', stock: '' }, { size: 'L', stock: '' }, { size: 'XL', stock: '' }, { size: 'XXL', stock: '' }],
+                    : (settings.sizes && settings.sizes.length > 0
+                       ? settings.sizes.map((size: string) => ({ size, stock: '' }))
+                       : [{ size: 'S', stock: '' }, { size: 'M', stock: '' }, { size: 'L', stock: '' }, { size: 'XL', stock: '' }, { size: 'XXL', stock: '' }]),
                   salesTag: product.salesTag || '',
                   colors: Array.isArray(product.colors) ? product.colors.join(', ') : product.colors || '',
                   customNameNumber: product.customNameNumber || false,
@@ -1268,6 +1321,23 @@ const AdminDashboard = () => {
                         onChange={(val) => handleDirectFieldChange(index, 'category', val)}
                         placeholder="Search Category..."
                       />
+                    </div>
+
+                    <div>
+                      <label className="block font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 mb-2 ml-2">Subcategory</label>
+                      <select
+                        name="subcategory"
+                        value={form.subcategory || ''}
+                        onChange={(e) => handleDirectFieldChange(index, 'subcategory', e.target.value)}
+                        className="w-full px-3 py-2.5 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none font-sans font-bold text-sm text-brand-on-surface transition-all"
+                      >
+                        <option value="">Select Subcategory...</option>
+                        {getAvailableSubcategories(form.category || []).map((sub: string) => (
+                          <option key={sub} value={sub}>
+                            {sub}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
@@ -1533,30 +1603,79 @@ const AdminDashboard = () => {
                             <Tags size={48} className="text-brand-on-surface-variant opacity-20" />
                           </div>
                         )}
-                        <div className="p-4 flex justify-between items-center bg-white z-10 border-t border-brand-surface-normal">
-                          <h4 className="font-h text-lg font-bold text-brand-on-surface">{cat.name}</h4>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                setIsCategoryEditMode(true);
-                                setEditingCategoryId(cat._id);
-                                setNewCategoryName(cat.name);
-                                setNewCategoryImage(null);
-                                setExistingCategoryImage(cat.imageUrl || '');
-                                setShowAddCategory(true);
+                        <div className="p-5 bg-white z-10 border-t border-brand-surface-normal flex flex-col flex-1">
+                          <h4 className="font-h text-lg font-bold text-brand-on-surface mb-3">{cat.name}</h4>
+                          
+                          {/* Subcategories list */}
+                          <div className="mb-4">
+                            <p className="text-[10px] font-bold text-brand-on-surface-variant opacity-60 uppercase tracking-widest mb-2">Subcategories</p>
+                            {cat.subcategories && cat.subcategories.length > 0 ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {cat.subcategories.map((sub: string) => (
+                                  <span key={sub} className="inline-flex items-center gap-1.5 bg-brand-surface-low border border-brand-surface-normal text-[10px] font-sans font-bold px-2.5 py-1 rounded-lg text-brand-on-surface-variant">
+                                    {sub}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteSubcategory(cat._id, sub)}
+                                      className="text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                                    >
+                                      <X size={10} strokeWidth={2.5} />
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-[10px] text-gray-400 italic">No subcategories created yet.</p>
+                            )}
+                          </div>
+
+                          {/* Add Subcategory inline form */}
+                          <div className="flex gap-2 mb-4 mt-auto">
+                            <input
+                              type="text"
+                              placeholder="New Subcategory..."
+                              value={selectedParentCategoryId === cat._id ? newSubcategoryName : ''}
+                              onChange={(e) => {
+                                setSelectedParentCategoryId(cat._id);
+                                setNewSubcategoryName(e.target.value);
                               }}
-                              className="text-brand-on-surface-variant opacity-40 hover:opacity-100 hover:text-blue-500 hover:bg-blue-50 p-2 rounded-xl transition-all active:scale-90"
-                              title="Edit Category"
-                            >
-                              <Edit size={20} />
-                            </button>
+                              className="flex-1 px-3 py-1.5 text-xs bg-brand-surface border border-brand-surface-normal rounded-lg outline-none focus:ring-1 focus:ring-brand-primary"
+                            />
                             <button
-                              onClick={() => handleDeleteCategory(cat._id)}
-                              className="text-brand-on-surface-variant opacity-40 hover:opacity-100 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-all active:scale-90"
-                              title="Delete Category"
+                              type="button"
+                              onClick={() => {
+                                handleCreateSubcategory(cat._id, selectedParentCategoryId === cat._id ? newSubcategoryName : '');
+                              }}
+                              className="bg-brand-primary hover:bg-black text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center cursor-pointer"
                             >
-                              <Trash2 size={20} />
+                              Add
                             </button>
+                          </div>
+
+                          <div className="flex justify-between items-center pt-3 border-t border-brand-surface-normal mt-auto">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setIsCategoryEditMode(true);
+                                  setEditingCategoryId(cat._id);
+                                  setNewCategoryName(cat.name);
+                                  setNewCategoryImage(null);
+                                  setExistingCategoryImage(cat.imageUrl || '');
+                                  setShowAddCategory(true);
+                                }}
+                                className="text-brand-on-surface-variant opacity-40 hover:opacity-100 hover:text-blue-500 hover:bg-blue-50 p-2 rounded-xl transition-all active:scale-90"
+                                title="Edit Category"
+                              >
+                                <Edit size={20} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteCategory(cat._id)}
+                                className="text-brand-on-surface-variant opacity-40 hover:opacity-100 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-all active:scale-90"
+                                title="Delete Category"
+                              >
+                                <Trash2 size={20} />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1683,13 +1802,15 @@ const AdminDashboard = () => {
                                   sizes: Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes || '',
                                   sizeStocks: product.sizeStocks && product.sizeStocks.length > 0
                                     ? product.sizeStocks.map((s: any) => ({ size: s.size, stock: s.stock }))
-                                    : [
-                                      { size: 'S', stock: '' },
-                                      { size: 'M', stock: '' },
-                                      { size: 'L', stock: '' },
-                                      { size: 'XL', stock: '' },
-                                      { size: 'XXL', stock: '' }
-                                    ],
+                                    : (settings.sizes && settings.sizes.length > 0
+                                       ? settings.sizes.map((size: string) => ({ size, stock: '' }))
+                                       : [
+                                          { size: 'S', stock: '' },
+                                          { size: 'M', stock: '' },
+                                          { size: 'L', stock: '' },
+                                          { size: 'XL', stock: '' },
+                                          { size: 'XXL', stock: '' }
+                                        ]),
                                   salesTag: product.salesTag || '',
                                   colors: Array.isArray(product.colors) ? product.colors.join(', ') : product.colors || '',
                                   customNameNumber: product.customNameNumber || false,
@@ -2534,6 +2655,59 @@ const AdminDashboard = () => {
                     <Plus size={16} />
                     Add Sales Tag
                   </button>
+                </div>
+              </div>
+
+              {/* Product Sizing Configuration */}
+              <div className="bg-white p-6 rounded-2xl border border-brand-surface-normal shadow-sm mb-6">
+                <h3 className="font-h text-lg font-bold text-brand-on-surface mb-4">Product Sizing Configuration</h3>
+                <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60 mb-4">Add or remove size options (e.g. Small, Medium, Large, UK 8, UK 9) available in product forms.</p>
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {(settings.sizes || []).map((size: string, idx: number) => (
+                      <span key={idx} className="inline-flex items-center gap-1.5 bg-brand-surface-low border border-brand-surface-normal text-xs font-sans font-bold px-3 py-1.5 rounded-xl text-brand-on-surface-variant">
+                        {size}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newSizes = [...(settings.sizes || [])];
+                            newSizes.splice(idx, 1);
+                            setSettings({ ...settings, sizes: newSizes });
+                          }}
+                          className="text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                        >
+                          <X size={12} strokeWidth={2.5} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Add size inline input */}
+                  <div className="flex gap-2 max-w-sm">
+                    <input
+                      type="text"
+                      placeholder="e.g. UK 8, Medium, 42"
+                      value={newSizeInput}
+                      onChange={(e) => setNewSizeInput(e.target.value)}
+                      className="w-full px-3 py-2 bg-brand-surface border border-brand-surface-normal rounded-md outline-none focus:ring-2 focus:ring-brand-primary"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (newSizeInput.trim()) {
+                          const sizeList = [...(settings.sizes || [])];
+                          if (!sizeList.includes(newSizeInput.trim())) {
+                            sizeList.push(newSizeInput.trim());
+                            setSettings({ ...settings, sizes: sizeList });
+                          }
+                          setNewSizeInput('');
+                        }
+                      }}
+                      className="bg-brand-primary hover:bg-black text-white px-4 py-2 rounded-md font-bold transition-all active:scale-95 flex items-center justify-center cursor-pointer"
+                    >
+                      Add Size
+                    </button>
+                  </div>
                 </div>
               </div>
 

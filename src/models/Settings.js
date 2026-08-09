@@ -11,7 +11,8 @@ const settingsSchema = new mongoose.Schema({
   salesTags: [{
     name: { type: String, required: true },
     color: { type: String, required: true }
-  }]
+  }],
+  sizes: [{ type: String, trim: true }]
 }, { timestamps: true });
 
 module.exports = mongoose.models.Settings || mongoose.model('Settings', settingsSchema);

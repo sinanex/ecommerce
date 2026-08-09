@@ -265,12 +265,12 @@ const AdminDashboard = () => {
     const configuredSizes = settings.sizes && settings.sizes.length > 0
       ? settings.sizes.map((size: string) => ({ size, stock: '' }))
       : [
-          { size: 'S', stock: '' },
-          { size: 'M', stock: '' },
-          { size: 'L', stock: '' },
-          { size: 'XL', stock: '' },
-          { size: 'XXL', stock: '' }
-        ];
+        { size: 'S', stock: '' },
+        { size: 'M', stock: '' },
+        { size: 'L', stock: '' },
+        { size: 'XL', stock: '' },
+        { size: 'XXL', stock: '' }
+      ];
 
     return {
       name: '',
@@ -797,12 +797,12 @@ const AdminDashboard = () => {
       const configuredSizes = settings.sizes && settings.sizes.length > 0
         ? settings.sizes.map((size: string) => ({ size, stock: '' }))
         : [
-            { size: 'S', stock: '' },
-            { size: 'M', stock: '' },
-            { size: 'L', stock: '' },
-            { size: 'XL', stock: '' },
-            { size: 'XXL', stock: '' }
-          ];
+          { size: 'S', stock: '' },
+          { size: 'M', stock: '' },
+          { size: 'L', stock: '' },
+          { size: 'XL', stock: '' },
+          { size: 'XXL', stock: '' }
+        ];
       setProductForms([...productForms, {
         ...getInitialProductState(),
         sizeStocks: configuredSizes
@@ -1117,8 +1117,8 @@ const AdminDashboard = () => {
                   sizeStocks: product.sizeStocks && product.sizeStocks.length > 0
                     ? product.sizeStocks.map((s: any) => ({ size: s.size, stock: s.stock }))
                     : (settings.sizes && settings.sizes.length > 0
-                       ? settings.sizes.map((size: string) => ({ size, stock: '' }))
-                       : [{ size: 'S', stock: '' }, { size: 'M', stock: '' }, { size: 'L', stock: '' }, { size: 'XL', stock: '' }, { size: 'XXL', stock: '' }]),
+                      ? settings.sizes.map((size: string) => ({ size, stock: '' }))
+                      : [{ size: 'S', stock: '' }, { size: 'M', stock: '' }, { size: 'L', stock: '' }, { size: 'XL', stock: '' }, { size: 'XXL', stock: '' }]),
                   salesTag: product.salesTag || '',
                   colors: Array.isArray(product.colors) ? product.colors.join(', ') : product.colors || '',
                   customNameNumber: product.customNameNumber || false,
@@ -1613,7 +1613,7 @@ const AdminDashboard = () => {
                         )}
                         <div className="p-5 bg-white z-10 border-t border-brand-surface-normal flex flex-col flex-1">
                           <h4 className="font-h text-lg font-bold text-brand-on-surface mb-3">{cat.name}</h4>
-                          
+
                           {/* Subcategories list */}
                           <div className="mb-4">
                             <p className="text-[10px] font-bold text-brand-on-surface-variant opacity-60 uppercase tracking-widest mb-2">Subcategories</p>
@@ -1811,14 +1811,14 @@ const AdminDashboard = () => {
                                   sizeStocks: product.sizeStocks && product.sizeStocks.length > 0
                                     ? product.sizeStocks.map((s: any) => ({ size: s.size, stock: s.stock }))
                                     : (settings.sizes && settings.sizes.length > 0
-                                       ? settings.sizes.map((size: string) => ({ size, stock: '' }))
-                                       : [
-                                          { size: 'S', stock: '' },
-                                          { size: 'M', stock: '' },
-                                          { size: 'L', stock: '' },
-                                          { size: 'XL', stock: '' },
-                                          { size: 'XXL', stock: '' }
-                                        ]),
+                                      ? settings.sizes.map((size: string) => ({ size, stock: '' }))
+                                      : [
+                                        { size: 'S', stock: '' },
+                                        { size: 'M', stock: '' },
+                                        { size: 'L', stock: '' },
+                                        { size: 'XL', stock: '' },
+                                        { size: 'XXL', stock: '' }
+                                      ]),
                                   salesTag: product.salesTag || '',
                                   colors: Array.isArray(product.colors) ? product.colors.join(', ') : product.colors || '',
                                   customNameNumber: product.customNameNumber || false,

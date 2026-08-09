@@ -305,14 +305,14 @@ export default function ProductDetailClient() {
     if (mockIds.includes(id)) {
       setProduct({
         _id: id,
-        name: id === '1' ? 'Manchester Home Kit 24/25' :
-          id === '2' ? 'Elite Vapour Training Tee' :
-            id === '3' ? 'London Away Kit 24/25' :
-              id === '4' ? 'National Pro Match Jersey' :
-                id === '5' ? 'Premium Red Kit' :
-                  id === '6' ? 'Sky Blue Fan Jersey' :
-                    id === '7' ? 'Pro Training Black' :
-                      id === '8' ? 'National Home Kit' : 'Match Gear',
+        name: id === '1' ? 'Classic White Sneakers' :
+          id === '2' ? 'Vapour Running Shoes' :
+            id === '3' ? 'London Turf Shoes' :
+              id === '4' ? 'Pro Turf Match Shoes' :
+                id === '5' ? 'Premium Red Football Shoes' :
+                  id === '6' ? 'Sky Blue Fan Shoes' :
+                    id === '7' ? 'Pro Training Running Shoes' :
+                      id === '8' ? 'National Football Shoes' : 'Premium Shoes',
         price: id === '1' ? 89.99 : id === '2' ? 54.99 : id === '3' ? 84.99 : id === '4' ? 79.99 : 89.99,
         discount_price: undefined,
         category: 'Football',
@@ -483,7 +483,7 @@ export default function ProductDetailClient() {
     "@type": "Product",
     "name": product.name,
     "image": firstImage,
-    "description": product.description || `Buy premium ${product.name} at 6YARD STORE. engineered for the fans, designed for the pros.`,
+    "description": product.description || `Buy premium ${product.name} at KITBAY STORE. Engineered for high performance, designed for maximum comfort.`,
     "offers": {
       "@type": "Offer",
       "priceCurrency": "INR",

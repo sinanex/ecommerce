@@ -246,7 +246,7 @@ export default function CheckoutWizard() {
         key: key,
         amount: rpOrder.amount,
         currency: rpOrder.currency,
-        name: "6YARD STORE",
+        name: "KITBAY STORE",
         description: "Secure Order Payment",
         image: "/icon.png",
         order_id: rpOrder.id,
@@ -508,7 +508,7 @@ export default function CheckoutWizard() {
                     <span className="text-lg">💳</span> Online Payment
                   </h5>
                   <p className="text-brand-on-surface-variant leading-relaxed">
-                    No extra charge — only jersey price.<br />
+                    No extra charge — only product price.<br />
                     <span className="text-green-600 font-bold">Free shipping available</span> on online payment ❤️
                   </p>
                 </button>

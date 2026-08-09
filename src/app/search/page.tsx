@@ -77,7 +77,7 @@ export default function SearchPage() {
             <input
               type="text"
               autoFocus
-              placeholder="Search jerseys, categories, or keywords..."
+              placeholder="Search shoes, categories, or keywords..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-gray-50/80 backdrop-blur-md border border-gray-100 rounded-full py-3 pl-11 pr-10 text-gray-900 placeholder-gray-400 outline-none focus:bg-white focus:border-gray-200 focus:ring-4 focus:ring-black/5 transition-all duration-300 font-sans font-medium text-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]"

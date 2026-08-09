@@ -89,7 +89,7 @@ export function printInvoice(order: any, orderNumber: string): void {
     <div style="padding: 22px 26px 18px 26px; display: flex; flex-direction: column; flex-grow: 1;">
       <!-- Header -->
       <div style="display: flex; align-items: center; min-height: 34px;">
-        <img src="${window.location.origin}/logo.png" alt="6YARD Logo" style="max-height: 28px; width: auto;" onerror="this.style.display='none'" />
+        <img src="${window.location.origin}/logo.png" alt="KITBAY Logo" style="max-height: 28px; width: auto;" onerror="this.style.display='none'" />
       </div>
       <hr style="border: none; border-top: 1px solid #d8d8d8; margin: 14px 0;" />
 
@@ -128,7 +128,7 @@ export function printInvoice(order: any, orderNumber: string): void {
       <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;">
         <div style="display: flex; flex-direction: column; justify-content: center;">
           <p style="margin: 2px 0; font-size: 12.5px; color: #333;">
-            Seller:<strong style="margin-left: 4px; color: #1a1a1a;">6YARD</strong>
+            Seller:<strong style="margin-left: 4px; color: #1a1a1a;">KITBAY</strong>
           </p>
           <p style="margin: 2px 0; font-size: 11.5px; color: #444;">
             Manjerithodi House, Mongam, kerala, 673642 , Mongam, Kerala, India, 673642

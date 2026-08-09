@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     await dbConnect();
 
     // 2. Resolve Base URL for absolute links
-    const host = req.headers.get('host') || '6yardjersey.com';
+    const host = req.headers.get('host') || 'kitbayshoes.com';
     const protocol = req.headers.get('x-forwarded-proto') || 'https';
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://${host}`;
 
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
               `<?xml version="1.0" encoding="UTF-8"?>\n` +
               `<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">\n` +
               `  <channel>\n` +
-              `    <title>${escapeXml('6yard Jersey Store')}</title>\n` +
+              `    <title>${escapeXml('Kitbay Shoes Store')}</title>\n` +
               `    <link>${escapeXml(baseUrl)}</link>\n` +
               `    <description>${escapeXml('Meta Commerce Catalog Feed containing dynamic products and variants')}</description>\n`
             )
@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
             // If it belongs to multiple, use the primary (first valid) category.
             const productType = validCategories.length > 0 ? validCategories[0] : 'General';
 
-            const brand = product.brand || '6yard';
+            const brand = product.brand || 'kitbay';
 
             // Format standard RSS feed item XML segment
             const productXml =
@@ -154,8 +154,8 @@ export async function GET(req: NextRequest) {
       `<?xml version="1.0" encoding="UTF-8"?>\n` +
       `<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">\n` +
       `  <channel>\n` +
-      `    <title>6yard Jersey Store</title>\n` +
-      `    <link>https://6yardjersey.com</link>\n` +
+      `    <title>Kitbay Shoes Store</title>\n` +
+      `    <link>https://kitbayshoes.com</link>\n` +
       `    <description>Meta Commerce Catalog Feed - System Error</description>\n` +
       `    <!-- Error details: ${escapeXml(error.message)} -->\n` +
       `  </channel>\n</rss>\n`;

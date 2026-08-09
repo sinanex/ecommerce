@@ -172,7 +172,7 @@ export default function CategoryPage({ params }: { params: Promise<{ name: strin
                 </div>
                 <h3 className="font-h text-xl font-bold text-brand-on-surface">No Products Found</h3>
                 <p className="font-sans text-brand-on-surface-variant mt-2 max-w-sm">
-                  No jerseys in the <strong>{categoryName}</strong> category yet. Check back soon!
+                  No shoes in the <strong>{categoryName}</strong> category yet. Check back soon!
                 </p>
               </div>
             )}

@@ -31,6 +31,11 @@ export default function HomeClient() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   const [isAddingBulk, setIsAddingBulk] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+  const filteredProducts = selectedCategory === 'All'
+    ? products
+    : products.filter(p => p.category && (Array.isArray(p.category) ? p.category.includes(selectedCategory) : p.category === selectedCategory));
 
   useEffect(() => {
     let active = true;
@@ -181,7 +186,7 @@ export default function HomeClient() {
                 }}
                 className="mb-8"
               >
-                <img src="/logo.png" alt="6YARD" className="h-16 w-auto object-contain filter drop-shadow-md" />
+                <img src="/logo.png" alt="KITBAY" className="h-16 w-auto object-contain filter drop-shadow-md" />
               </motion.div>
 
               {/* Premium Spinner */}
@@ -291,39 +296,98 @@ export default function HomeClient() {
 
             {/* Categories Section */}
             {categories.length > 0 && (
-              <section className="py-3 bg-white w-full">
-                <div className="px-2 md:px-[50px] w-full">
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                    {categories.map((cat, idx) => (
-                      <motion.div
-                        key={cat._id || cat.name}
-                        className="group cursor-pointer transition-all duration-300 relative flex flex-col"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.1 }}
-                        onClick={() => navigate.push(`/category/${encodeURIComponent(cat.name)}`)}
+              <section className="py-6 bg-white w-full sticky top-20 z-40">
+                <div className="flex items-center gap-6 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-6 md:px-[50px] w-full">
+                  
+
+
+                  {/* Individual Categories */}
+                  {categories.map((cat) => (
+                    <button
+                      key={cat._id || cat.name}
+                      onClick={() => setSelectedCategory(cat.name)}
+                      className="flex flex-col items-center gap-2.5 shrink-0 group cursor-pointer"
+                    >
+                      <div
+                        className={cn(
+                          "w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all duration-300 relative flex items-center justify-center bg-brand-surface-low shadow-sm",
+                          selectedCategory === cat.name
+                            ? "border-black scale-105 shadow-md"
+                            : "border-brand-surface-normal group-hover:border-brand-primary/50 group-hover:scale-102"
+                        )}
                       >
                         {cat.imageUrl ? (
-                          <div className="w-full aspect-[2/3] overflow-hidden rounded-xl bg-brand-surface-low">
-                            <img
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                              src={cat.imageUrl}
-                              alt={cat.name}
-                            />
-                          </div>
+                          <img
+                            src={cat.imageUrl}
+                            alt={cat.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
                         ) : (
-                          <div className="w-full aspect-[2/3] rounded-xl bg-brand-surface-low flex items-center justify-center">
-                            <div className="font-h text-brand-on-surface-variant opacity-20 text-6xl">?</div>
-                          </div>
+                          <span className="text-2xl">👟</span>
                         )}
-                        <p className="font-h text-base font-bold text-brand-on-surface text-center mt-2 tracking-wide">{cat.name}</p>
-                      </motion.div>
-                    ))}
-                  </div>
+                      </div>
+                      <span
+                        className={cn(
+                          "font-sans text-[10px] font-bold uppercase tracking-widest transition-colors",
+                          selectedCategory === cat.name
+                            ? "text-black"
+                            : "text-brand-on-surface-variant group-hover:text-brand-primary"
+                        )}
+                      >
+                        {cat.name}
+                      </span>
+                    </button>
+                  ))}
+
                 </div>
               </section>
             )}
+
+            {/* Products Section */}
+            <section className="py-8 bg-white w-full">
+              <div className="px-6 md:px-[50px] w-full">
+                <h2 className="font-h text-2xl font-black text-brand-on-surface uppercase tracking-tight mb-6 flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-brand-primary rounded-full" />
+                  {selectedCategory === 'All' ? 'All Products' : `${selectedCategory}`}
+                </h2>
+                {filteredProducts.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {filteredProducts.map((product) => {
+                      const isSoldOut = product.stock === 0 || (product.sizeStocks && product.sizeStocks.every((s: any) => s.stock === 0));
+                      const displayPrice = product.discount_price || product.price;
+                      const originalPrice = product.discount_price ? product.price : undefined;
+                      const mappedProduct = {
+                        ...product,
+                        id: product._id,
+                        price: displayPrice,
+                        originalPrice: originalPrice,
+                        images: product.images || [],
+                        image: product.images?.[0] || 'https://images.unsplash.com/photo-1541002442-9f5985aa8023',
+                        isNew: true,
+                        isSale: !!product.discount_price,
+                        stock: product.stock,
+                        salesTag: isSoldOut ? "Sold Out" : product.salesTag,
+                        salesTagColor: isSoldOut ? "#333333" : product.salesTagColor
+                      };
+                      return (
+                        <ProductCard
+                          key={product._id}
+                          product={mappedProduct}
+                          onQuickAdd={handleQuickAdd}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-center w-full bg-white rounded-3xl border border-brand-surface-normal">
+                    <h3 className="font-h text-xl font-bold text-brand-on-surface">No Products Found</h3>
+                    <p className="font-sans text-brand-on-surface-variant mt-2">
+                      No products available in this category yet.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
           </>
         )}
 

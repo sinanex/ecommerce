@@ -13,7 +13,7 @@ export default function Footer() {
 
         {/* Logo */}
         <div className="text-xl font-black text-brand-on-surface font-h uppercase tracking-widest">
-          6YARD
+          KITBAY
         </div>
 
         {/* Nav links */}
@@ -24,7 +24,7 @@ export default function Footer() {
 
         {/* Instagram icon */}
         <a
-          href="https://www.instagram.com/6yard.2?igsh=MTF0MWd2N2Vjd2d1eQ=="
+          href="https://www.instagram.com/kitbay.shoes"
           target="_blank"
           rel="noopener noreferrer"
           className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-on-surface-variant hover:text-[#E4405F] hover:shadow-md transition-all"
@@ -36,7 +36,7 @@ export default function Footer() {
       {/* Copyright */}
       <div className="max-w-[1280px] mx-auto mt-4 pt-4 border-t border-brand-surface-normal text-center">
         <p className="font-sans font-medium text-[10px] text-brand-on-surface-variant uppercase tracking-widest">
-          &copy; {new Date().getFullYear()} 6YARD
+          &copy; {new Date().getFullYear()} KITBAY
         </p>
       </div>
     </footer>

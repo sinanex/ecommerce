@@ -23,19 +23,19 @@ export async function generateMetadata({ params }: { params: any }): Promise<Met
   const id = resolvedParams.id;
   
   const mockIds = ['1', '2', '3', '4', '5', '6', '7', '8', 'rem-1', 'rem-2', 'rem-3', 'rem-4'];
-  let name = '6YARD Product';
-  let description = 'Get your hands on the premium gear from 6YARD.';
-  let image = 'https://6yardjersey.com/icon.png';
+  let name = 'KITBAY Product';
+  let description = 'Get your hands on the premium shoes from KITBAY.';
+  let image = 'https://kitbayshoes.com/icon.png';
 
   if (mockIds.includes(id)) {
-    name = id === '1' ? 'Manchester Home Kit 24/25' :
-           id === '2' ? 'Elite Vapour Training Tee' :
-           id === '3' ? 'London Away Kit 24/25' :
-           id === '4' ? 'National Pro Match Jersey' :
-           id === '5' ? 'Premium Red Kit' :
-           id === '6' ? 'Sky Blue Fan Jersey' :
-           id === '7' ? 'Pro Training Black' :
-           id === '8' ? 'National Home Kit' : 'Match Gear';
+    name = id === '1' ? 'Classic White Sneakers' :
+           id === '2' ? 'Vapour Running Shoes' :
+           id === '3' ? 'London Turf Shoes' :
+           id === '4' ? 'Pro Turf Match Shoes' :
+           id === '5' ? 'Premium Red Football Shoes' :
+           id === '6' ? 'Sky Blue Fan Shoes' :
+           id === '7' ? 'Pro Training Running Shoes' :
+           id === '8' ? 'National Football Shoes' : 'Premium Shoes';
   } else {
     try {
       await dbConnect();
@@ -57,14 +57,14 @@ export async function generateMetadata({ params }: { params: any }): Promise<Met
     title: name,
     description: description,
     openGraph: {
-      title: `${name} | 6YARD`,
+      title: `${name} | KITBAY`,
       description: description,
       images: [{ url: image }],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${name} | 6YARD`,
+      title: `${name} | KITBAY`,
       description: description,
       images: [image],
     },
@@ -76,20 +76,20 @@ export default async function ProductPage({ params }: { params: any }) {
   const id = resolvedParams.id;
   
   const mockIds = ['1', '2', '3', '4', '5', '6', '7', '8', 'rem-1', 'rem-2', 'rem-3', 'rem-4'];
-  let name = '6YARD Product';
-  let description = 'Get your hands on the premium gear from 6YARD.';
-  let image = 'https://6yardjersey.com/icon.png';
+  let name = 'KITBAY Product';
+  let description = 'Get your hands on the premium shoes from KITBAY.';
+  let image = 'https://kitbayshoes.com/icon.png';
   let currentPrice = 89.99;
 
   if (mockIds.includes(id)) {
-    name = id === '1' ? 'Manchester Home Kit 24/25' :
-           id === '2' ? 'Elite Vapour Training Tee' :
-           id === '3' ? 'London Away Kit 24/25' :
-           id === '4' ? 'National Pro Match Jersey' :
-           id === '5' ? 'Premium Red Kit' :
-           id === '6' ? 'Sky Blue Fan Jersey' :
-           id === '7' ? 'Pro Training Black' :
-           id === '8' ? 'National Home Kit' : 'Match Gear';
+    name = id === '1' ? 'Classic White Sneakers' :
+           id === '2' ? 'Vapour Running Shoes' :
+           id === '3' ? 'London Turf Shoes' :
+           id === '4' ? 'Pro Turf Match Shoes' :
+           id === '5' ? 'Premium Red Football Shoes' :
+           id === '6' ? 'Sky Blue Fan Shoes' :
+           id === '7' ? 'Pro Training Running Shoes' :
+           id === '8' ? 'National Football Shoes' : 'Premium Shoes';
     currentPrice = id === '1' ? 89.99 : id === '2' ? 54.99 : id === '3' ? 84.99 : id === '4' ? 79.99 : 89.99;
   } else {
     try {
@@ -118,7 +118,7 @@ export default async function ProductPage({ params }: { params: any }) {
     "sku": id,
     "brand": {
       "@type": "Brand",
-      "name": "6YARD"
+      "name": "KITBAY"
     },
     "offers": {
       "@type": "Offer",
@@ -126,7 +126,7 @@ export default async function ProductPage({ params }: { params: any }) {
       "price": currentPrice,
       "itemCondition": "https://schema.org/NewCondition",
       "availability": "https://schema.org/InStock",
-      "url": `https://6yardjersey.com/product/${id}`
+      "url": `https://kitbayshoes.com/product/${id}`
     }
   };
 
@@ -138,19 +138,19 @@ export default async function ProductPage({ params }: { params: any }) {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://6yardjersey.com/"
+        "item": "https://kitbayshoes.com/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Shop",
-        "item": "https://6yardjersey.com/"
+        "item": "https://kitbayshoes.com/"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": name,
-        "item": `https://6yardjersey.com/product/${id}`
+        "item": `https://kitbayshoes.com/product/${id}`
       }
     ]
   };

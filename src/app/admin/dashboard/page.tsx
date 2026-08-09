@@ -1257,7 +1257,7 @@ const AdminDashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     <div className="col-span-1 md:col-span-2 lg:col-span-1">
                       <label className="block font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 mb-2 ml-2">Product Name*</label>
-                      <input name="name" value={form.name} onChange={(e) => handleInputChange(index, e)} type="text" className="w-full px-3 py-2 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none font-h font-bold text-lg transition-all" placeholder="e.g. Argentina Home Jersey" required />
+                      <input name="name" value={form.name} onChange={(e) => handleInputChange(index, e)} type="text" className="w-full px-3 py-2 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none font-h font-bold text-lg transition-all" placeholder="e.g. Nike Air Max Running Shoes" required />
                     </div>
 
                     <div>
@@ -1451,8 +1451,8 @@ const AdminDashboard = () => {
 
             {showAddCategory ? (
               <div className="bg-white p-5 rounded-xl shadow-xl border border-brand-surface-normal">
-                <h3 className="font-h text-lg font-bold text-brand-on-surface mb-2">{isCategoryEditMode ? 'Edit Category' : 'Create Category (Jersey Type)'}</h3>
-                <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60 mb-8">{isCategoryEditMode ? 'Modify category details' : 'Add a new jersey type or category'}</p>
+                <h3 className="font-h text-lg font-bold text-brand-on-surface mb-2">{isCategoryEditMode ? 'Edit Category' : 'Create Category (Shoes Type)'}</h3>
+                <p className="text-sm text-gray-500 text-brand-on-surface-variant opacity-60 mb-8">{isCategoryEditMode ? 'Modify category details' : 'Add a new shoes type or category'}</p>
                 <form onSubmit={handleCreateCategory} className="space-y-6 max-w-xl">
                   <div>
                     <label className="block font-sans text-xs font-medium text-gray-500 text-brand-on-surface-variant opacity-60 mb-2 ml-2">Category Name (Type)*</label>
@@ -1461,7 +1461,7 @@ const AdminDashboard = () => {
                       value={newCategoryName}
                       onChange={(e) => setNewCategoryName(e.target.value)}
                       className="w-full px-3 py-2 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none font-h font-bold text-lg transition-all"
-                      placeholder="e.g. Player Edition, Fan Edition, Retro"
+                      placeholder="e.g. Running, Sneakers, Casual"
                       required
                     />
                   </div>
@@ -2248,7 +2248,7 @@ const AdminDashboard = () => {
                             value={bannerData.linkUrl}
                             onChange={(e) => setBannerData({ ...bannerData, linkUrl: e.target.value })}
                             className="w-full px-3 py-2 bg-brand-surface rounded-md border-none focus:ring-2 focus:ring-brand-primary outline-none font-h font-bold text-lg transition-all"
-                            placeholder="e.g. /category/jerseys"
+                            placeholder="e.g. /category/shoes"
                           />
                         </div>
                       </div>

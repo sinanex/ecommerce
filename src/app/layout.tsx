@@ -18,25 +18,25 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://6yardjersey.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://kitbayshoes.com'),
   title: {
-    default: '6YARD | Buy Football Jerseys Online in India',
-    template: '%s | 6YARD',
+    default: 'KITBAY | Buy Premium Shoes Online in India',
+    template: '%s | KITBAY',
   },
-  description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories. Your premium online football store with complete delivery across India.',
-  keywords: ['football jerseys India', 'buy football jersey online', 'club jerseys', 'national team jerseys', 'football kits', 'retro football jerseys', 'sports accessories', 'online football store India', 'football jersey online shopping', '6YARD'],
+  description: 'Shop premium shoes online at KITBAY. Explore sports shoes, running shoes, sneakers, and casual footwear. Your premium online shoes store with complete delivery across India.',
+  keywords: ['shoes India', 'buy shoes online', 'sports shoes', 'sneakers', 'running shoes', 'online shoes store India', 'shoes online shopping', 'KITBAY'],
   openGraph: {
-    title: '6YARD | Buy Football Jerseys Online in India',
-    description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories.',
-    url: 'https://6yardjersey.com',
-    siteName: '6YARD',
+    title: 'KITBAY | Buy Premium Shoes Online in India',
+    description: 'Shop premium shoes online at KITBAY. Explore sports shoes, running shoes, sneakers, and casual footwear.',
+    url: 'https://kitbayshoes.com',
+    siteName: 'KITBAY',
     locale: 'en_IN',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: '6YARD | Buy Football Jerseys Online in India',
-    description: 'Shop authentic football jerseys online at 6YARD. Explore club jerseys, national team jerseys, football kits, goalkeeper jerseys, retro jerseys and sports accessories.',
+    title: 'KITBAY | Buy Premium Shoes Online in India',
+    description: 'Shop premium shoes online at KITBAY. Explore sports shoes, running shoes, sneakers, and casual footwear.',
   },
   robots: {
     index: true,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://6yardjersey.com',
+    canonical: 'https://kitbayshoes.com',
   },
 };
 
@@ -59,7 +59,6 @@ import { SnackbarProvider } from "@/context/SnackbarContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import MetaPixel from "@/components/MetaPixel";
 
 export default function RootLayout({
   children,
@@ -79,19 +78,19 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",
-                "name": "6YARD",
-                "url": "https://6yardjersey.com",
-                "logo": "https://6yardjersey.com/logo.png",
-                "description": "Premium online football jersey store serving all of India."
+                "name": "KITBAY",
+                "url": "https://kitbayshoes.com",
+                "logo": "https://kitbayshoes.com/logo.png",
+                "description": "Premium online shoes store serving all of India."
               },
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "name": "6YARD",
-                "url": "https://6yardjersey.com",
+                "name": "KITBAY",
+                "url": "https://kitbayshoes.com",
                 "potentialAction": {
                   "@type": "SearchAction",
-                  "target": "https://6yardjersey.com/search?q={search_term_string}",
+                  "target": "https://kitbayshoes.com/search?q={search_term_string}",
                   "query-input": "required name=search_term_string"
                 }
               }
@@ -100,7 +99,6 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <MetaPixel />
         <SnackbarProvider>
           <CartProvider>
             <Navbar />

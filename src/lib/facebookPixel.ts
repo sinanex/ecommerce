@@ -65,112 +65,17 @@ export interface PurchaseParams {
 }
 
 export const trackViewContent = (product: ViewContentProduct) => {
-  if (typeof window === "undefined" || !window.fbq) return;
-
-  const eventKey = `ViewContent_${product._id}`;
-  if (firedEvents.has(eventKey)) return;
-
-  try {
-    window.fbq("track", "ViewContent", {
-      content_ids: [product._id],
-      content_name: product.name,
-      content_type: "product",
-      value: product.price,
-      currency: "INR",
-    });
-    firedEvents.add(eventKey);
-    logEvent("ViewContent", {
-      content_ids: [product._id],
-      content_name: product.name,
-      content_type: "product",
-      value: product.price,
-      currency: "INR",
-    });
-  } catch (error) {
-    // Graceful error handling - never crash the application
-  }
+  // Meta Pixel tracking is disabled
 };
 
 export const trackAddToCart = (product: AddToCartProduct) => {
-  if (typeof window === "undefined" || !window.fbq) return;
-
-  // Prevent multiple rapid clicks from firing duplicate AddToCart within a 1-second interval
-  const windowBucket = Math.floor(Date.now() / 1000);
-  const eventKey = `AddToCart_${product._id}_${windowBucket}`;
-  if (firedEvents.has(eventKey)) return;
-
-  try {
-    window.fbq("track", "AddToCart", {
-      content_ids: [product._id],
-      content_name: product.name,
-      content_type: "product",
-      value: product.price,
-      currency: "INR",
-    });
-    firedEvents.add(eventKey);
-    logEvent("AddToCart", {
-      content_ids: [product._id],
-      content_name: product.name,
-      content_type: "product",
-      value: product.price,
-      currency: "INR",
-    });
-  } catch (error) {
-    // Graceful error handling
-  }
+  // Meta Pixel tracking is disabled
 };
 
 export const trackInitiateCheckout = (params: InitiateCheckoutParams) => {
-  if (typeof window === "undefined" || !window.fbq) return;
-
-  const eventKey = "InitiateCheckout";
-  if (firedEvents.has(eventKey)) return;
-
-  try {
-    window.fbq("track", "InitiateCheckout", {
-      value: params.value,
-      currency: params.currency || "INR",
-      content_type: "product",
-      contents: params.contents,
-      num_items: params.num_items,
-    });
-    firedEvents.add(eventKey);
-    logEvent("InitiateCheckout", {
-      value: params.value,
-      currency: params.currency || "INR",
-      content_type: "product",
-      contents: params.contents,
-      num_items: params.num_items,
-    });
-  } catch (error) {
-    // Graceful error handling
-  }
+  // Meta Pixel tracking is disabled
 };
 
 export const trackPurchase = (params: PurchaseParams) => {
-  if (typeof window === "undefined" || !window.fbq) return;
-
-  if (hasPurchaseBeenFired(params.transaction_id)) return;
-
-  try {
-    window.fbq("track", "Purchase", {
-      transaction_id: params.transaction_id,
-      value: params.value,
-      currency: params.currency || "INR",
-      content_type: "product",
-      contents: params.contents,
-      num_items: params.num_items,
-    });
-    markPurchaseAsFired(params.transaction_id);
-    logEvent("Purchase", {
-      transaction_id: params.transaction_id,
-      value: params.value,
-      currency: params.currency || "INR",
-      content_type: "product",
-      contents: params.contents,
-      num_items: params.num_items,
-    });
-  } catch (error) {
-    // Graceful error handling
-  }
+  // Meta Pixel tracking is disabled
 };

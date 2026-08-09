@@ -185,7 +185,7 @@ function CheckoutContent() {
         key: key,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "6YARD",
+        name: "KITBAY",
         description: isCod ? "Advance Payment for COD" : "Order Payment",
         image: "/logo.png",
         order_id: orderData.id,
@@ -226,7 +226,7 @@ function CheckoutContent() {
   return (
     <div className="min-h-screen bg-brand-surface text-brand-on-surface pt-24 pb-32">
       <>
-        <title>Secure Checkout | 6YARD</title>
+        <title>Secure Checkout | KITBAY</title>
       </>
 
       <main className="max-w-[1280px] mx-auto px-6">

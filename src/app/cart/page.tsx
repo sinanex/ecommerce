@@ -226,8 +226,8 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-brand-surface text-brand-on-surface pt-20 pb-16">
       <>
-        <title>Shopping Cart | 6YARD STORE</title>
-        <meta name="description" content="View your premium football kits and sports training gear in your shopping cart. Fast and secure checkout with free shipping over ₹1000." />
+        <title>Shopping Cart | KITBAY STORE</title>
+        <meta name="description" content="View your premium shoes and sports training footwear in your shopping cart. Fast and secure checkout with free shipping over ₹1000." />
         <meta name="robots" content="noindex, follow" />
       </>
 
